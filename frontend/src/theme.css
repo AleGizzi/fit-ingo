@@ -1,0 +1,117 @@
+/* Fit-ingo design tokens.
+   Energetic training-partner identity: ember orange (streak/heat/primary),
+   violet (achievement), mint (completed). Lilac-tinted light / deep plum dark.
+   Theme is driven by data-theme on <html> ('light' | 'dark'); 'system' resolves
+   at runtime to one of those. */
+
+:root {
+  --ember: #ff5a1f;
+  --ember-deep: #e23e00; /* button bottom lip / pressed */
+  --ember-soft: #ffe7dc;
+  --violet: #6c4bf4;
+  --violet-soft: #eae4ff;
+  --mint: #00c48c;
+  --mint-soft: #d6f7ec;
+  --gold: #ffb020;
+
+  --radius: 20px;
+  --radius-sm: 14px;
+  --radius-pill: 999px;
+
+  --font: "SF Pro Rounded", "Nunito", ui-rounded, system-ui, -apple-system,
+    "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+
+  --shadow-card: 0 2px 0 rgba(22, 19, 31, 0.04), 0 8px 24px rgba(22, 19, 31, 0.06);
+  --tap: 0.12s cubic-bezier(0.2, 0, 0, 1);
+}
+
+/* Light (default) */
+:root,
+:root[data-theme="light"] {
+  --bg: #f5f4fb;
+  --bg-grad-a: #f7f1ff;
+  --bg-grad-b: #f4f6fb;
+  --card: #ffffff;
+  --card-2: #f8f7fd;
+  --ink: #191524;
+  --ink-2: #5b5570;
+  --ink-3: #918aa6;
+  --line: #ece9f4;
+  --track: #eceaf3;
+}
+
+:root[data-theme="dark"] {
+  --bg: #131019;
+  --bg-grad-a: #191327;
+  --bg-grad-b: #100e18;
+  --card: #1e1a2b;
+  --card-2: #241f33;
+  --ink: #f3f1fa;
+  --ink-2: #b7b1c9;
+  --ink-3: #7d768f;
+  --line: #2c2740;
+  --track: #2a2540;
+  --ember-soft: #3a2115;
+  --violet-soft: #241d44;
+  --mint-soft: #113329;
+  --shadow-card: 0 2px 0 rgba(0, 0, 0, 0.2), 0 10px 28px rgba(0, 0, 0, 0.35);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font);
+  color: var(--ink);
+  background:
+    radial-gradient(1200px 600px at 80% -10%, var(--bg-grad-a), transparent 60%),
+    var(--bg);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overscroll-behavior-y: none;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+button {
+  font-family: inherit;
+}
+
+a {
+  color: var(--violet);
+}
+
+/* Tabular, heavy numerals for stats/counters. */
+.num {
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--ink-3);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}

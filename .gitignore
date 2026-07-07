@@ -1,0 +1,22 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Node
+node_modules/
+frontend/.vite/
+*.log
+
+# Local database & runtime data (never commit personal data)
+server/data/
+data/
+*.db
+*.db-wal
+*.db-shm
+
+# OS
+.DS_Store
+
+# NOTE: frontend/dist/ is intentionally committed so Termux needs no Node.

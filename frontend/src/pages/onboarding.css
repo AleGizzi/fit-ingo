@@ -1,0 +1,109 @@
+.onb {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+.onb-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.onb-backbtn {
+  border: none;
+  background: var(--card-2);
+  color: var(--ink);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  font-size: 26px;
+  line-height: 1;
+  cursor: pointer;
+  flex: none;
+}
+.onb-bar {
+  flex: 1;
+  height: 10px;
+  background: var(--track);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+}
+.onb-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--ember), var(--gold));
+  border-radius: var(--radius-pill);
+  transition: width 0.35s cubic-bezier(0.2, 0, 0, 1);
+}
+
+.onb-welcome {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 16px;
+  padding: 40px 8px;
+}
+.onb-flame {
+  font-size: 76px;
+  animation: pop 1.6s ease-in-out infinite;
+}
+.onb-welcome-title {
+  font-size: 32px;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+}
+.onb-welcome-intro {
+  color: var(--ink-2);
+  font-size: 16px;
+  max-width: 300px;
+}
+.onb-welcome .btn {
+  margin-top: 18px;
+  width: 100%;
+}
+
+.onb-step {
+  flex: 1;
+}
+.onb-q {
+  font-size: 26px;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  margin: 6px 0 4px;
+}
+.onb-help {
+  margin-bottom: 8px;
+}
+.onb-body {
+  margin-top: 18px;
+}
+.onb-actions {
+  position: sticky;
+  bottom: 0;
+  padding: 16px 0 max(16px, env(safe-area-inset-bottom));
+  background: linear-gradient(to top, var(--bg) 70%, transparent);
+}
+
+.chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.chip {
+  border: 2px solid var(--line);
+  background: var(--card);
+  color: var(--ink);
+  padding: 10px 16px;
+  border-radius: var(--radius-pill);
+  font-weight: 800;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all var(--tap);
+}
+.chip-on {
+  border-color: var(--violet);
+  background: var(--violet-soft);
+  color: var(--violet);
+}

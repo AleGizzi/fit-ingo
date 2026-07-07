@@ -1,0 +1,116 @@
+{
+  "app": { "name": "Fit-ingo", "tagline": "Keep the streak alive." },
+  "nav": { "today": "Today", "progress": "Progress", "diet": "Diet", "settings": "Settings" },
+  "common": {
+    "next": "Next", "back": "Back", "save": "Save", "cancel": "Cancel",
+    "done": "Done", "start": "Start", "finish": "Finish workout", "skip": "Skip",
+    "loading": "Loading…", "minutes": "min", "seconds": "sec", "reps": "reps",
+    "sets": "sets", "of": "of", "close": "Close", "edit": "Edit"
+  },
+  "onboarding": {
+    "welcome": "Welcome to Fit-ingo",
+    "intro": "Answer a few questions and we'll build a workout plan that fits you.",
+    "letsgo": "Let's go",
+    "step": "Step {{n}} of {{total}}",
+    "name": "What's your name?",
+    "namePlaceholder": "Your name",
+    "about": "About you",
+    "age": "Age", "sex": "Sex", "height": "Height (cm)", "weight": "Weight (kg)",
+    "sexMale": "Male", "sexFemale": "Female", "sexOther": "Other",
+    "goalTitle": "What's your goal?",
+    "levelTitle": "How active are you right now?",
+    "impactTitle": "Any joint concerns?",
+    "impactHelp": "We'll match the intensity to what your body can handle.",
+    "equipmentTitle": "What can you train with?",
+    "scheduleTitle": "How often can you train?",
+    "daysPerWeek": "Days per week",
+    "sessionMinutes": "Minutes per session",
+    "limitationsTitle": "Anything we should work around?",
+    "limitationsHelp": "We'll skip exercises that stress these areas.",
+    "dietTitle": "Any diet preference?",
+    "buildPlan": "Build my plan",
+    "building": "Building your plan…"
+  },
+  "goal": {
+    "lose": "Lose weight", "maintain": "Stay fit", "gain_muscle": "Build muscle",
+    "general": "General health",
+    "lose_d": "Burn fat with more conditioning work",
+    "maintain_d": "Balanced strength and cardio",
+    "gain_muscle_d": "More strength volume to grow",
+    "general_d": "Move well and feel good"
+  },
+  "level": {
+    "beginner": "Just starting", "intermediate": "I train sometimes", "advanced": "Very active",
+    "beginner_d": "New to exercise or coming back",
+    "intermediate_d": "A few workouts a week",
+    "advanced_d": "Regular, intense training"
+  },
+  "impact": {
+    "none": "Low impact only", "low": "Some is fine", "normal": "No limits",
+    "none_d": "No jumping or pounding", "low_d": "Light impact is okay", "normal_d": "Bring it on"
+  },
+  "equipment": {
+    "none": "Just my body", "bands": "Resistance bands", "dumbbells": "Dumbbells",
+    "none_d": "Bodyweight only", "bands_d": "Bands (and bodyweight)", "dumbbells_d": "Dumbbells, bands and bodyweight"
+  },
+  "diet": {
+    "any": "No preference", "vegetarian": "Vegetarian",
+    "targets": "Your daily targets",
+    "calories": "Calories", "protein": "Protein", "carbs": "Carbs", "fat": "Fat", "water": "Water",
+    "meals": "Meal ideas for today",
+    "breakfast": "Breakfast", "lunch": "Lunch", "dinner": "Dinner", "snack": "Snack",
+    "total": "Day total", "refresh": "New ideas",
+    "bmrTdee": "Rest {{bmr}} · Active {{tdee}} kcal"
+  },
+  "limitations": {
+    "knee": "Knees", "back": "Lower back", "shoulder": "Shoulders", "wrist": "Wrists", "none": "None"
+  },
+  "today": {
+    "restTitle": "Rest day",
+    "restBody": "Recovery is part of the plan. Enjoy the day off — your streak is safe.",
+    "todaysWorkout": "Today's workout",
+    "focus": "Focus",
+    "estMinutes": "~{{n}} min",
+    "startWorkout": "Start workout",
+    "resume": "Resume workout",
+    "completed": "Workout complete!",
+    "completedBody": "Nice work. See you next session.",
+    "noPlan": "No plan yet",
+    "noPlanBody": "Finish your profile to get a personalized plan.",
+    "streak": "day streak",
+    "streakBest": "Best: {{n}}",
+    "atRisk": "Train today to keep your streak!",
+    "week": "This week"
+  },
+  "workout": {
+    "warmup": "Warm-up", "main": "Workout", "cooldown": "Cool-down",
+    "watch": "Watch how", "markDone": "Mark done", "undo": "Undo",
+    "howHard": "How hard was that?",
+    "veryEasy": "Very easy", "easy": "Easy", "okay": "Okay", "hard": "Hard", "veryHard": "Very hard",
+    "progress": "{{done}} of {{total}} done",
+    "finishEarly": "Finish now",
+    "restSec": "{{n}}s rest"
+  },
+  "progress": {
+    "title": "Your progress",
+    "streak": "Streak", "best": "Best", "completion": "Completion", "workouts": "Workouts",
+    "weightTrend": "Weight trend",
+    "logWeight": "Log weight", "weightKg": "Weight (kg)", "add": "Add",
+    "consistency": "Consistency (last 12 weeks)",
+    "noWeight": "Log your weight to see the trend.",
+    "noData": "Complete a workout to start tracking."
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language", "theme": "Theme",
+    "themeLight": "Light", "themeDark": "Dark", "themeSystem": "System",
+    "reminders": "Reminders",
+    "remindersOn": "Daily reminders",
+    "reminderTimes": "Reminder times",
+    "addTime": "Add time", "nag": "Streak-saver nudge", "nagTime": "Nudge time",
+    "profile": "Profile", "editProfile": "Edit profile",
+    "reminderHelp": "Reminders are sent by the app running on this device. Keep it running in the background.",
+    "regenerate": "Regenerate plan", "regenerateHelp": "Build a fresh week based on your recent workouts.",
+    "about": "Fit-ingo runs entirely on your device. Your data never leaves it."
+  }
+}

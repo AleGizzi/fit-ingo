@@ -1,0 +1,182 @@
+/* Shared UI: pressable buttons, cards, option tiles, segmented, stepper. */
+
+.btn {
+  --lip: var(--ember-deep);
+  --face: var(--ember);
+  border: none;
+  border-radius: var(--radius-pill);
+  background: var(--face);
+  color: #fff;
+  font-weight: 800;
+  font-size: 16px;
+  padding: 14px 22px;
+  cursor: pointer;
+  box-shadow: 0 4px 0 var(--lip);
+  transform: translateY(0);
+  transition: transform var(--tap), box-shadow var(--tap), filter var(--tap);
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+.btn:active {
+  transform: translateY(4px);
+  box-shadow: 0 0 0 var(--lip);
+}
+.btn:focus-visible {
+  outline: 3px solid var(--violet);
+  outline-offset: 2px;
+}
+.btn:disabled {
+  filter: grayscale(0.5) opacity(0.6);
+  cursor: default;
+}
+.btn-block {
+  display: block;
+  width: 100%;
+}
+.btn-violet {
+  --face: var(--violet);
+  --lip: #4c2fd0;
+}
+.btn-soft {
+  --face: var(--card-2);
+  --lip: var(--line);
+  color: var(--ink);
+}
+.btn-ghost {
+  background: transparent;
+  color: var(--ink-2);
+  box-shadow: none;
+  font-weight: 700;
+}
+.btn-ghost:active {
+  transform: none;
+  background: var(--card-2);
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+  padding: 18px;
+}
+
+/* Option tile */
+.opt {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  text-align: left;
+  background: var(--card);
+  border: 2px solid var(--line);
+  border-radius: var(--radius);
+  padding: 16px;
+  cursor: pointer;
+  transition: border-color var(--tap), background var(--tap), transform var(--tap);
+  color: var(--ink);
+}
+.opt:active {
+  transform: scale(0.99);
+}
+.opt-on {
+  border-color: var(--ember);
+  background: var(--ember-soft);
+}
+.opt-icon {
+  font-size: 26px;
+  line-height: 1;
+  flex: none;
+}
+.opt-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+.opt-title {
+  font-weight: 800;
+  font-size: 16px;
+}
+.opt-desc {
+  font-size: 13px;
+  color: var(--ink-2);
+}
+.opt-check {
+  flex: none;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  font-weight: 900;
+  background: var(--opt-check-bg, transparent);
+}
+.opt-on .opt-check {
+  background: var(--ember);
+}
+
+/* Segmented control */
+.seg {
+  display: flex;
+  gap: 4px;
+  background: var(--card-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  padding: 4px;
+}
+.seg-item {
+  flex: 1;
+  border: none;
+  background: transparent;
+  color: var(--ink-2);
+  font-weight: 700;
+  font-size: 14px;
+  padding: 9px 10px;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: background var(--tap), color var(--tap);
+}
+.seg-on {
+  background: var(--card);
+  color: var(--ink);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+/* Stepper */
+.stepper {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--card-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  padding: 4px;
+}
+.stepper button {
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  background: var(--card);
+  color: var(--ink);
+  font-size: 22px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+.stepper button:active {
+  transform: scale(0.94);
+}
+.stepper-val {
+  min-width: 62px;
+  text-align: center;
+  font-size: 20px;
+}
+.stepper-suffix {
+  font-size: 13px;
+  color: var(--ink-2);
+  font-weight: 700;
+  margin-left: 3px;
+}

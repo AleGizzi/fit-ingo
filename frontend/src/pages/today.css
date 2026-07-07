@@ -1,0 +1,121 @@
+.today-head {
+  margin-bottom: 18px;
+}
+
+.streak-card {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #2a1608, var(--card) 70%);
+  border-color: transparent;
+  position: relative;
+  overflow: hidden;
+}
+:root[data-theme="light"] .streak-card {
+  background: linear-gradient(135deg, #fff2e9, var(--card) 75%);
+}
+.streak-meta {
+  margin-left: auto;
+  text-align: right;
+}
+.streak-count {
+  font-size: 46px;
+  line-height: 1;
+  color: var(--ember);
+}
+.streak-label {
+  font-weight: 800;
+  color: var(--ink-2);
+  font-size: 14px;
+  margin-top: 2px;
+}
+.streak-best {
+  font-size: 12px;
+  color: var(--ink-3);
+  font-weight: 700;
+  margin-top: 4px;
+}
+
+.week-block {
+  margin: 18px 2px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.risk-banner {
+  background: var(--ember-soft);
+  color: var(--ember-deep);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  font-weight: 800;
+  font-size: 14px;
+  margin-bottom: 14px;
+}
+:root[data-theme="dark"] .risk-banner {
+  color: var(--gold);
+}
+
+.today-state {
+  text-align: center;
+  padding: 30px 20px;
+}
+.today-state-icon {
+  font-size: 44px;
+}
+.today-state-title {
+  font-size: 22px;
+  font-weight: 900;
+  margin: 8px 0 4px;
+}
+
+.workout-card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.workout-focus {
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: -0.01em;
+  margin-top: 2px;
+}
+.workout-est {
+  background: var(--violet-soft);
+  color: var(--violet);
+  font-weight: 800;
+  font-size: 13px;
+  padding: 6px 12px;
+  border-radius: var(--radius-pill);
+  white-space: nowrap;
+}
+.preview-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.preview-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.preview-list li::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--ember);
+  flex: none;
+}
+.preview-more {
+  color: var(--ink-3) !important;
+  font-weight: 800 !important;
+}
+.preview-more::before {
+  background: var(--ink-3) !important;
+}

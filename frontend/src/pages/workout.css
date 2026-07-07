@@ -1,0 +1,234 @@
+.wk {
+  min-height: 100vh;
+  padding-bottom: 100px;
+}
+.wk-top {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 2px;
+  background: var(--bg);
+}
+.wk-close {
+  border: none;
+  background: var(--card-2);
+  color: var(--ink);
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+  flex: none;
+}
+.wk-progress {
+  flex: 1;
+  height: 12px;
+  background: var(--track);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+}
+.wk-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--mint), #34e0af);
+  border-radius: var(--radius-pill);
+  transition: width 0.3s cubic-bezier(0.2, 0, 0, 1);
+}
+.wk-count {
+  font-size: 15px;
+  color: var(--ink-2);
+  min-width: 44px;
+  text-align: right;
+}
+
+.wk-list {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  margin-top: 8px;
+}
+.wk-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ex-card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 16px;
+  box-shadow: var(--shadow-card);
+  transition: opacity var(--tap), border-color var(--tap);
+}
+.ex-done {
+  opacity: 0.62;
+  border-color: var(--mint);
+}
+.ex-main {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.ex-info {
+  flex: 1;
+}
+.ex-name {
+  font-size: 17px;
+  font-weight: 800;
+}
+.ex-dose {
+  color: var(--violet);
+  font-size: 14px;
+}
+.ex-check {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 2px solid var(--line);
+  background: var(--card-2);
+  color: transparent;
+  font-size: 22px;
+  font-weight: 900;
+  cursor: pointer;
+  transition: all var(--tap);
+}
+.ex-check:active {
+  transform: scale(0.9);
+}
+.ex-check-on {
+  background: var(--mint);
+  border-color: var(--mint);
+  color: #fff;
+}
+.ex-instructions {
+  color: var(--ink-2);
+  font-size: 14px;
+  line-height: 1.5;
+  margin-top: 10px;
+}
+.ex-video {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+  color: var(--ember);
+  font-weight: 800;
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.wk-footer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 14px 18px max(14px, env(safe-area-inset-bottom));
+  background: linear-gradient(to top, var(--bg) 70%, transparent);
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+/* Rating sheet */
+.rating-sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgba(10, 8, 16, 0.5);
+  animation: fade 0.2s ease;
+}
+.rating-card {
+  background: var(--card);
+  border-radius: 26px 26px 0 0;
+  padding: 24px 18px max(24px, env(safe-area-inset-bottom));
+  width: 100%;
+  max-width: 520px;
+  animation: slideup 0.28s cubic-bezier(0.2, 0, 0, 1);
+}
+.rating-title {
+  text-align: center;
+  font-size: 20px;
+  font-weight: 900;
+  margin-bottom: 18px;
+}
+.rating-scale {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+}
+.rating-dot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  border: none;
+  background: var(--card-2);
+  border-radius: var(--radius-sm);
+  padding: 12px 4px;
+  cursor: pointer;
+  transition: transform var(--tap), background var(--tap);
+}
+.rating-dot:active {
+  transform: scale(0.94);
+  background: var(--ember-soft);
+}
+.rating-emoji {
+  font-size: 26px;
+}
+.rating-lbl {
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--ink-2);
+  text-align: center;
+}
+.rating-skip {
+  display: block;
+  margin: 16px auto 0;
+  border: none;
+  background: transparent;
+  color: var(--ink-3);
+  font-weight: 800;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.celebrate {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  background: radial-gradient(circle at center, #2a1608, var(--bg));
+  animation: fade 0.3s ease;
+}
+.celebrate-flame {
+  font-size: 90px;
+  animation: pop 0.9s ease-in-out infinite;
+}
+.celebrate-num {
+  font-size: 64px;
+  color: var(--ember);
+}
+.celebrate-lbl {
+  font-weight: 800;
+  color: var(--ink-2);
+}
+
+@keyframes fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes slideup {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}

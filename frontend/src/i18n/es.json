@@ -1,0 +1,116 @@
+{
+  "app": { "name": "Fit-ingo", "tagline": "Mantén viva tu racha." },
+  "nav": { "today": "Hoy", "progress": "Progreso", "diet": "Dieta", "settings": "Ajustes" },
+  "common": {
+    "next": "Siguiente", "back": "Atrás", "save": "Guardar", "cancel": "Cancelar",
+    "done": "Hecho", "start": "Empezar", "finish": "Terminar entrenamiento", "skip": "Saltar",
+    "loading": "Cargando…", "minutes": "min", "seconds": "seg", "reps": "reps",
+    "sets": "series", "of": "de", "close": "Cerrar", "edit": "Editar"
+  },
+  "onboarding": {
+    "welcome": "Bienvenido a Fit-ingo",
+    "intro": "Responde unas preguntas y crearemos un plan de entrenamiento a tu medida.",
+    "letsgo": "Vamos",
+    "step": "Paso {{n}} de {{total}}",
+    "name": "¿Cómo te llamas?",
+    "namePlaceholder": "Tu nombre",
+    "about": "Sobre ti",
+    "age": "Edad", "sex": "Sexo", "height": "Altura (cm)", "weight": "Peso (kg)",
+    "sexMale": "Hombre", "sexFemale": "Mujer", "sexOther": "Otro",
+    "goalTitle": "¿Cuál es tu objetivo?",
+    "levelTitle": "¿Qué tan activo estás ahora?",
+    "impactTitle": "¿Molestias en las articulaciones?",
+    "impactHelp": "Ajustaremos la intensidad a lo que tu cuerpo tolera.",
+    "equipmentTitle": "¿Con qué puedes entrenar?",
+    "scheduleTitle": "¿Con qué frecuencia entrenas?",
+    "daysPerWeek": "Días por semana",
+    "sessionMinutes": "Minutos por sesión",
+    "limitationsTitle": "¿Algo que debamos evitar?",
+    "limitationsHelp": "Saltaremos ejercicios que carguen estas zonas.",
+    "dietTitle": "¿Preferencia de dieta?",
+    "buildPlan": "Crear mi plan",
+    "building": "Creando tu plan…"
+  },
+  "goal": {
+    "lose": "Bajar de peso", "maintain": "Mantenerme", "gain_muscle": "Ganar músculo",
+    "general": "Salud general",
+    "lose_d": "Quema grasa con más trabajo cardio",
+    "maintain_d": "Fuerza y cardio equilibrados",
+    "gain_muscle_d": "Más volumen de fuerza para crecer",
+    "general_d": "Moverte bien y sentirte bien"
+  },
+  "level": {
+    "beginner": "Empezando", "intermediate": "Entreno a veces", "advanced": "Muy activo",
+    "beginner_d": "Nuevo o retomando el ejercicio",
+    "intermediate_d": "Algunos entrenos por semana",
+    "advanced_d": "Entrenamiento regular e intenso"
+  },
+  "impact": {
+    "none": "Solo bajo impacto", "low": "Un poco está bien", "normal": "Sin límites",
+    "none_d": "Sin saltos ni impactos", "low_d": "Impacto ligero está bien", "normal_d": "Sin restricciones"
+  },
+  "equipment": {
+    "none": "Solo mi cuerpo", "bands": "Bandas elásticas", "dumbbells": "Mancuernas",
+    "none_d": "Solo peso corporal", "bands_d": "Bandas (y peso corporal)", "dumbbells_d": "Mancuernas, bandas y peso corporal"
+  },
+  "diet": {
+    "any": "Sin preferencia", "vegetarian": "Vegetariana",
+    "targets": "Tus objetivos diarios",
+    "calories": "Calorías", "protein": "Proteína", "carbs": "Carbohidratos", "fat": "Grasa", "water": "Agua",
+    "meals": "Ideas de comidas para hoy",
+    "breakfast": "Desayuno", "lunch": "Almuerzo", "dinner": "Cena", "snack": "Snack",
+    "total": "Total del día", "refresh": "Nuevas ideas",
+    "bmrTdee": "Reposo {{bmr}} · Activo {{tdee}} kcal"
+  },
+  "limitations": {
+    "knee": "Rodillas", "back": "Zona lumbar", "shoulder": "Hombros", "wrist": "Muñecas", "none": "Ninguna"
+  },
+  "today": {
+    "restTitle": "Día de descanso",
+    "restBody": "Recuperar es parte del plan. Disfruta el día libre — tu racha está a salvo.",
+    "todaysWorkout": "Entrenamiento de hoy",
+    "focus": "Enfoque",
+    "estMinutes": "~{{n}} min",
+    "startWorkout": "Empezar entrenamiento",
+    "resume": "Continuar entrenamiento",
+    "completed": "¡Entrenamiento completado!",
+    "completedBody": "Buen trabajo. Nos vemos en la próxima sesión.",
+    "noPlan": "Aún no hay plan",
+    "noPlanBody": "Completa tu perfil para obtener un plan personalizado.",
+    "streak": "días de racha",
+    "streakBest": "Mejor: {{n}}",
+    "atRisk": "¡Entrena hoy para mantener tu racha!",
+    "week": "Esta semana"
+  },
+  "workout": {
+    "warmup": "Calentamiento", "main": "Entrenamiento", "cooldown": "Enfriamiento",
+    "watch": "Ver cómo", "markDone": "Marcar hecho", "undo": "Deshacer",
+    "howHard": "¿Qué tan difícil fue?",
+    "veryEasy": "Muy fácil", "easy": "Fácil", "okay": "Normal", "hard": "Difícil", "veryHard": "Muy difícil",
+    "progress": "{{done}} de {{total}} hechos",
+    "finishEarly": "Terminar ahora",
+    "restSec": "{{n}}s descanso"
+  },
+  "progress": {
+    "title": "Tu progreso",
+    "streak": "Racha", "best": "Mejor", "completion": "Cumplimiento", "workouts": "Entrenos",
+    "weightTrend": "Evolución del peso",
+    "logWeight": "Registrar peso", "weightKg": "Peso (kg)", "add": "Añadir",
+    "consistency": "Constancia (últimas 12 semanas)",
+    "noWeight": "Registra tu peso para ver la evolución.",
+    "noData": "Completa un entrenamiento para empezar a registrar."
+  },
+  "settings": {
+    "title": "Ajustes",
+    "language": "Idioma", "theme": "Tema",
+    "themeLight": "Claro", "themeDark": "Oscuro", "themeSystem": "Sistema",
+    "reminders": "Recordatorios",
+    "remindersOn": "Recordatorios diarios",
+    "reminderTimes": "Horas de recordatorio",
+    "addTime": "Añadir hora", "nag": "Aviso salva-rachas", "nagTime": "Hora del aviso",
+    "profile": "Perfil", "editProfile": "Editar perfil",
+    "reminderHelp": "Los recordatorios los envía la app en este dispositivo. Mantenla corriendo en segundo plano.",
+    "regenerate": "Regenerar plan", "regenerateHelp": "Crea una semana nueva según tus entrenos recientes.",
+    "about": "Fit-ingo funciona totalmente en tu dispositivo. Tus datos nunca salen de él."
+  }
+}

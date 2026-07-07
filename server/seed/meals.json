@@ -1,0 +1,33 @@
+{
+  "note_en": "These are general suggestions, not medical or nutritional advice. Consult a professional for a personalized plan, especially if you have a health condition.",
+  "note_es": "Estas son sugerencias generales, no consejo médico ni nutricional. Consulta a un profesional para un plan personalizado, sobre todo si tienes alguna condición de salud.",
+  "meals": [
+    {"id": "b1", "slot": "breakfast", "name_en": "Oats with milk, banana and peanut butter", "name_es": "Avena con leche, plátano y crema de cacahuete", "kcal": 420, "protein_g": 18, "tags": ["vegetarian", "high_carb"]},
+    {"id": "b2", "slot": "breakfast", "name_en": "Scrambled eggs, whole-grain toast and avocado", "name_es": "Huevos revueltos, pan integral y aguacate", "kcal": 450, "protein_g": 24, "tags": ["vegetarian", "high_protein"]},
+    {"id": "b3", "slot": "breakfast", "name_en": "Greek yogurt with berries and granola", "name_es": "Yogur griego con frutos rojos y granola", "kcal": 320, "protein_g": 22, "tags": ["vegetarian", "high_protein", "light"]},
+    {"id": "b4", "slot": "breakfast", "name_en": "Veggie omelette with spinach and tomato", "name_es": "Omelette de verduras con espinaca y tomate", "kcal": 280, "protein_g": 20, "tags": ["vegetarian", "high_protein", "low_carb", "light"]},
+    {"id": "b5", "slot": "breakfast", "name_en": "Protein smoothie: milk, whey, oats and fruit", "name_es": "Batido de proteína: leche, whey, avena y fruta", "kcal": 400, "protein_g": 35, "tags": ["vegetarian", "high_protein"]},
+    {"id": "b6", "slot": "breakfast", "name_en": "Whole-grain toast with cottage cheese and tomato", "name_es": "Pan integral con requesón y tomate", "kcal": 300, "protein_g": 24, "tags": ["vegetarian", "high_protein", "light"]},
+
+    {"id": "l1", "slot": "lunch", "name_en": "Grilled chicken, rice and mixed vegetables", "name_es": "Pollo a la plancha, arroz y verduras", "kcal": 550, "protein_g": 42, "tags": ["high_protein"]},
+    {"id": "l2", "slot": "lunch", "name_en": "Lentil stew with vegetables and a slice of bread", "name_es": "Guiso de lentejas con verduras y una rebanada de pan", "kcal": 480, "protein_g": 26, "tags": ["vegetarian", "high_protein", "high_carb"]},
+    {"id": "l3", "slot": "lunch", "name_en": "Tuna salad with beans, egg and olive oil", "name_es": "Ensalada de atún con alubias, huevo y aceite de oliva", "kcal": 430, "protein_g": 38, "tags": ["high_protein", "low_carb"]},
+    {"id": "l4", "slot": "lunch", "name_en": "Turkey and veggie wrap in a whole-grain tortilla", "name_es": "Wrap de pavo y verduras en tortilla integral", "kcal": 460, "protein_g": 32, "tags": ["high_protein"]},
+    {"id": "l5", "slot": "lunch", "name_en": "Chickpea and quinoa bowl with roasted veggies", "name_es": "Bowl de garbanzos y quinoa con verduras asadas", "kcal": 500, "protein_g": 22, "tags": ["vegetarian", "high_carb"]},
+    {"id": "l6", "slot": "lunch", "name_en": "Big green salad with grilled salmon", "name_es": "Ensalada verde grande con salmón a la plancha", "kcal": 420, "protein_g": 36, "tags": ["high_protein", "low_carb", "light"]},
+
+    {"id": "d1", "slot": "dinner", "name_en": "Baked white fish, sweet potato and broccoli", "name_es": "Pescado blanco al horno, boniato y brócoli", "kcal": 480, "protein_g": 38, "tags": ["high_protein"]},
+    {"id": "d2", "slot": "dinner", "name_en": "Stir-fried tofu with vegetables and rice", "name_es": "Tofu salteado con verduras y arroz", "kcal": 500, "protein_g": 24, "tags": ["vegetarian", "high_carb"]},
+    {"id": "d3", "slot": "dinner", "name_en": "Lean beef, mashed potato and green beans", "name_es": "Res magra, puré de papa y judías verdes", "kcal": 560, "protein_g": 40, "tags": ["high_protein"]},
+    {"id": "d4", "slot": "dinner", "name_en": "Vegetable soup with chicken and a slice of bread", "name_es": "Sopa de verduras con pollo y una rebanada de pan", "kcal": 380, "protein_g": 30, "tags": ["high_protein", "light"]},
+    {"id": "d5", "slot": "dinner", "name_en": "Omelette with vegetables and side salad", "name_es": "Tortilla con verduras y ensalada", "kcal": 340, "protein_g": 24, "tags": ["vegetarian", "high_protein", "low_carb", "light"]},
+    {"id": "d6", "slot": "dinner", "name_en": "Whole-grain pasta with tomato sauce and turkey", "name_es": "Pasta integral con salsa de tomate y pavo", "kcal": 540, "protein_g": 34, "tags": ["high_protein", "high_carb"]},
+
+    {"id": "s1", "slot": "snack", "name_en": "Apple with a handful of almonds", "name_es": "Manzana con un puñado de almendras", "kcal": 200, "protein_g": 6, "tags": ["vegetarian", "light"]},
+    {"id": "s2", "slot": "snack", "name_en": "Greek yogurt with honey", "name_es": "Yogur griego con miel", "kcal": 180, "protein_g": 15, "tags": ["vegetarian", "high_protein", "light"]},
+    {"id": "s3", "slot": "snack", "name_en": "Carrot sticks with hummus", "name_es": "Zanahorias con hummus", "kcal": 160, "protein_g": 6, "tags": ["vegetarian", "low_carb", "light"]},
+    {"id": "s4", "slot": "snack", "name_en": "Boiled eggs and a piece of fruit", "name_es": "Huevos cocidos y una fruta", "kcal": 220, "protein_g": 14, "tags": ["vegetarian", "high_protein", "light"]},
+    {"id": "s5", "slot": "snack", "name_en": "Protein shake with water", "name_es": "Batido de proteína con agua", "kcal": 150, "protein_g": 28, "tags": ["vegetarian", "high_protein", "low_carb", "light"]},
+    {"id": "s6", "slot": "snack", "name_en": "Cottage cheese with pineapple", "name_es": "Requesón con piña", "kcal": 190, "protein_g": 20, "tags": ["vegetarian", "high_protein", "light"]}
+  ]
+}

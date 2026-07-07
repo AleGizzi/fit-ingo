@@ -1,0 +1,84 @@
+.kcal-card {
+  text-align: center;
+  background: linear-gradient(135deg, var(--violet-soft), var(--card) 75%);
+}
+.kcal-big {
+  font-size: 52px;
+  line-height: 1;
+  color: var(--violet);
+}
+.kcal-unit {
+  font-weight: 800;
+  color: var(--ink-2);
+  margin-top: 4px;
+}
+.kcal-sub {
+  font-size: 12px;
+  color: var(--ink-3);
+  font-weight: 700;
+  margin-top: 8px;
+}
+
+.macro-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+.macro {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 12px 8px;
+  text-align: center;
+}
+.macro-value {
+  font-size: 20px;
+}
+.macro-unit {
+  font-size: 12px;
+  color: var(--ink-3);
+  margin-left: 1px;
+}
+.macro-label {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--ink-2);
+  margin-top: 4px;
+}
+.macro-ember .macro-value { color: var(--ember); }
+.macro-violet .macro-value { color: var(--violet); }
+.macro-gold .macro-value { color: var(--gold); }
+.macro-water .macro-value { color: #2aa9e0; }
+
+.meal-card {
+  padding: 14px 16px;
+}
+.meal-slot {
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ember);
+}
+.meal-name {
+  font-weight: 800;
+  font-size: 16px;
+  margin: 4px 0 6px;
+}
+.meal-macros {
+  font-size: 13px;
+  color: var(--ink-2);
+  font-weight: 600;
+}
+
+.total-row {
+  font-weight: 900;
+  padding: 4px 6px;
+  color: var(--ink);
+}
+.disclaimer {
+  font-size: 12px;
+  color: var(--ink-3);
+  line-height: 1.5;
+  padding: 0 4px 8px;
+}

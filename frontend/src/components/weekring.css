@@ -1,0 +1,48 @@
+.weekring {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+}
+.weekring-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.weekring-dot {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-weight: 900;
+  font-size: 15px;
+  background: var(--track);
+  color: var(--ink-3);
+  border: 2px solid transparent;
+}
+.wr-done {
+  background: var(--mint);
+  color: #fff;
+}
+.wr-today {
+  background: var(--ember-soft);
+  color: var(--ember);
+  border-color: var(--ember);
+}
+.wr-missed {
+  background: transparent;
+  border: 2px dashed var(--line);
+}
+.wr-rest {
+  background: transparent;
+  color: var(--ink-3);
+}
+.wr-future {
+  background: var(--track);
+}
+.weekring-lbl {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--ink-3);
+}

@@ -1,0 +1,84 @@
+.setting-help {
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.toggle {
+  width: 52px;
+  height: 30px;
+  border-radius: var(--radius-pill);
+  border: none;
+  background: var(--track);
+  position: relative;
+  cursor: pointer;
+  transition: background var(--tap);
+  flex: none;
+}
+.toggle-on {
+  background: var(--mint);
+}
+.toggle-knob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  transition: transform var(--tap);
+}
+.toggle-on .toggle-knob {
+  transform: translateX(22px);
+}
+
+.time-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.time-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.time-input {
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  border: 2px solid var(--line);
+  background: var(--card);
+  color: var(--ink);
+  font-size: 16px;
+  font-family: inherit;
+  font-variant-numeric: tabular-nums;
+}
+.time-input:focus {
+  outline: none;
+  border-color: var(--violet);
+}
+.time-row .time-input {
+  flex: 1;
+}
+.time-remove {
+  width: 38px;
+  height: 38px;
+  border: none;
+  border-radius: 50%;
+  background: var(--card-2);
+  color: var(--ink-3);
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  flex: none;
+}
+.add-time {
+  margin-top: 10px;
+  border: 2px dashed var(--line);
+  background: transparent;
+  color: var(--violet);
+  font-weight: 800;
+  padding: 10px 16px;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  width: 100%;
+}
