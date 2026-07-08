@@ -15,6 +15,17 @@ echo "==> Installing Python requirements"
 #pip install --upgrade pip
 pip install -r "$REPO_DIR/server/requirements.txt"
 
+echo "==> Checking Termux:API setup"
+if command -v termux-notification >/dev/null 2>&1; then
+  echo "  ✓ Termux:API CLI detected. Attempting test notification..."
+  termux-notification --title "Fit-ingo" --content "Setup OK — notifications work! 🔥" || echo "  (notification command found but failed — see termux/TROUBLESHOOTING.md)"
+else
+  echo "  ⚠ termux-notification NOT found."
+  echo "  The termux-api package (pkg install termux-api) and the Termux:API app"
+  echo "  (from F-Droid, same source as Termux) are both required for notifications."
+  echo "  See termux/TROUBLESHOOTING.md for details."
+fi
+
 echo
 echo "Setup complete."
 echo "Next steps:"

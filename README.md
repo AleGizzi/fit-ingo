@@ -56,6 +56,10 @@ Android phone
 allow unrestricted / disable optimization. `start.sh` already takes a wake-lock.
 Keep Termux running in the background (its persistent notification).
 
+### Notifications not working?
+
+Both the **Termux:API app** (installed from the same source as Termux — F-Droid or Play, not mixed) and the **`termux-api` package** (`pkg install termux-api`) are required. Android 13+ also needs notification permission granted to Termux:API in Settings. Try the in-app **Settings → Send test notification** button, and see `termux/TROUBLESHOOTING.md` for full diagnostics.
+
 **Auto-start on reboot (optional):** see `termux/boot/fit-ingo.sh`.
 
 ## Develop on a computer

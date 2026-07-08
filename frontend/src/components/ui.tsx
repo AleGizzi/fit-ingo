@@ -2,7 +2,7 @@ import type { ButtonHTMLAttributes, ReactNode } from "react";
 import "./ui.css";
 
 type BtnProps = ButtonHTMLAttributes<HTMLButtonElement> & {
-  variant?: "primary" | "violet" | "ghost" | "soft";
+  variant?: "primary" | "violet" | "ghost" | "soft" | "danger";
   block?: boolean;
 };
 

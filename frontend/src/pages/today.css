@@ -60,6 +60,9 @@
   text-align: center;
   padding: 30px 20px;
 }
+.today-state .btn {
+  margin-top: 16px;
+}
 .today-state-icon {
   font-size: 44px;
 }

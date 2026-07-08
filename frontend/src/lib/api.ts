@@ -53,4 +53,14 @@ export const api = {
 
   getSettings: () => fetch("/api/settings").then(j<Settings>),
   saveSettings: (s: Partial<Settings>) => post("/api/settings", s).then(j<Settings>),
+
+  resetApp: () => post("/api/reset", {}).then(j<{ ok: boolean }>),
+  getNotificationStatus: () =>
+    fetch("/api/notifications/status").then(
+      j<{ termux_cli: boolean; last_fired: string | null; last_error: string | null }>,
+    ),
+  testNotification: () =>
+    post("/api/notifications/test", {}).then(
+      j<{ sent: boolean; termux: boolean; error: string | null }>,
+    ),
 };

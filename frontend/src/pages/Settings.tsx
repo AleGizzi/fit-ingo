@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useApp } from "../AppContext";
@@ -10,8 +10,21 @@ import "./settings.css";
 export function Settings() {
   const { t } = useTranslation();
   const nav = useNavigate();
-  const { settings, setSettings, reload } = useApp();
+  const { settings, setSettings, setProfile, reload } = useApp();
   const [busy, setBusy] = useState(false);
+  const [notifStatus, setNotifStatus] = useState<{
+    termux_cli: boolean;
+    last_fired: string | null;
+    last_error: string | null;
+  } | null>(null);
+  const [testBusy, setTestBusy] = useState(false);
+  const [testResult, setTestResult] = useState<{ ok: boolean; message: string } | null>(null);
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
+  const [resetting, setResetting] = useState(false);
+
+  useEffect(() => {
+    api.getNotificationStatus().then(setNotifStatus).catch(() => setNotifStatus(null));
+  }, []);
 
   if (!settings) return <p className="muted">{t("common.loading")}</p>;
 
@@ -41,6 +54,35 @@ export function Settings() {
       await reload();
     } finally {
       setBusy(false);
+    }
+  }
+
+  async function sendTestNotification() {
+    setTestBusy(true);
+    setTestResult(null);
+    try {
+      const res = await api.testNotification();
+      if (res.sent) {
+        setTestResult({ ok: true, message: t("settings.testSent") });
+      } else {
+        setTestResult({ ok: false, message: res.error ?? t("settings.testFailed") });
+      }
+    } catch {
+      setTestResult({ ok: false, message: t("settings.testFailed") });
+    } finally {
+      setTestBusy(false);
+    }
+  }
+
+  async function confirmReset() {
+    setResetting(true);
+    try {
+      await api.resetApp();
+      setProfile(null);
+      nav("/onboarding", { replace: true });
+    } finally {
+      setResetting(false);
+      setShowResetConfirm(false);
     }
   }
 
@@ -125,6 +167,27 @@ export function Settings() {
             <p className="muted setting-help">{t("settings.reminderHelp")}</p>
           </>
         )}
+
+        <div className="notif-status">
+          {notifStatus ? (
+            notifStatus.termux_cli ? (
+              <span className="notif-ok">{t("settings.termuxDetected")}</span>
+            ) : (
+              <span className="notif-warn">{t("settings.termuxMissing")}</span>
+            )
+          ) : (
+            <span className="muted">{t("common.loading")}</span>
+          )}
+          {notifStatus?.last_error && (
+            <p className="muted notif-error">{notifStatus.last_error}</p>
+          )}
+        </div>
+        <Button variant="soft" onClick={sendTestNotification} disabled={testBusy}>
+          {testBusy ? t("common.loading") : t("settings.testNotification")}
+        </Button>
+        {testResult && (
+          <p className={testResult.ok ? "notif-ok" : "notif-warn"}>{testResult.message}</p>
+        )}
       </Card>
 
       <Card className="stack">
@@ -142,7 +205,33 @@ export function Settings() {
         </Button>
       </Card>
 
+      <Card className="stack">
+        <div>
+          <div className="field-label" style={{ margin: 0 }}>{t("settings.reset")}</div>
+        </div>
+        <Button variant="danger" onClick={() => setShowResetConfirm(true)}>
+          {t("settings.reset")}
+        </Button>
+      </Card>
+
       <p className="disclaimer" style={{ textAlign: "center" }}>🔒 {t("settings.about")}</p>
+
+      {showResetConfirm && (
+        <div className="confirm-sheet">
+          <div className="confirm-card">
+            <h3 className="confirm-title">{t("settings.resetConfirmTitle")}</h3>
+            <p className="muted confirm-body">{t("settings.resetConfirmBody")}</p>
+            <div className="confirm-actions">
+              <Button variant="ghost" onClick={() => setShowResetConfirm(false)} disabled={resetting}>
+                {t("common.cancel")}
+              </Button>
+              <Button variant="danger" onClick={confirmReset} disabled={resetting}>
+                {resetting ? t("common.loading") : t("settings.resetConfirm")}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

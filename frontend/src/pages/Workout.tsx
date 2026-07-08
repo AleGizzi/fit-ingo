@@ -33,6 +33,7 @@ export function Workout() {
   const items = useMemo(() => today?.day?.items ?? [], [today]);
   const total = items.length;
   const doneCount = items.filter((i) => doneIds.has(itemKey(i))).length;
+  const isReviewing = !!today?.log?.completed;
 
   if (!today) return <p className="muted">{t("common.loading")}</p>;
   if (!today.day || today.day.is_rest) {
@@ -41,6 +42,7 @@ export function Workout() {
   }
 
   function toggle(item: PlanItem) {
+    if (isReviewing) return;
     const key = itemKey(item);
     setDoneIds((prev) => {
       const next = new Set(prev);
@@ -78,6 +80,8 @@ export function Workout() {
         <span className="wk-count num">{doneCount}/{total}</span>
       </header>
 
+      {isReviewing && <div className="wk-reviewing-badge">{t("workout.reviewing")}</div>}
+
       <div className="wk-list">
         {grouped.map((g) => (
           <section key={g.block} className="wk-section">
@@ -95,6 +99,7 @@ export function Workout() {
                     <button
                       className={`ex-check ${isDone ? "ex-check-on" : ""}`}
                       onClick={() => toggle(it)}
+                      disabled={isReviewing}
                       aria-label={isDone ? t("workout.undo") : t("workout.markDone")}
                     >
                       {isDone ? "✓" : ""}
@@ -114,12 +119,18 @@ export function Workout() {
       </div>
 
       <div className="wk-footer">
-        <Button block onClick={() => setShowRating(true)}>
-          {doneCount >= total ? t("common.finish") : t("workout.finishEarly")}
-        </Button>
+        {isReviewing ? (
+          <Button block variant="soft" onClick={() => nav("/today")}>
+            {t("common.back")}
+          </Button>
+        ) : (
+          <Button block onClick={() => setShowRating(true)}>
+            {doneCount >= total ? t("common.finish") : t("workout.finishEarly")}
+          </Button>
+        )}
       </div>
 
-      {showRating && !savedStreak && (
+      {!isReviewing && showRating && !savedStreak && (
         <div className="rating-sheet">
           <div className="rating-card">
             <h3 className="rating-title">{t("workout.howHard")}</h3>

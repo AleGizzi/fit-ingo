@@ -22,6 +22,13 @@ def _parse(d) -> date:
 def compute_streak(completed_dates, training_weekdays, today=None) -> dict:
     """Return current + best streak given completion history.
 
+    Strict rule: a scheduled training day counts toward the streak ONLY if
+    its date is present in ``completed_dates``. Walking backwards from today,
+    the first training day that was NOT completed ends the run immediately
+    (today itself is exempt from breaking the streak until its own day is
+    over — see below). Rest days (weekdays not in ``training_weekdays``) are
+    skipped entirely: they are never counted and never break the streak.
+
     Args:
         completed_dates: iterable of ISO date strings / date objects that were
             completed.

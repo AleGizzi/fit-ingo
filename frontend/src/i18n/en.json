@@ -1,6 +1,6 @@
 {
   "app": { "name": "Fit-ingo", "tagline": "Keep the streak alive." },
-  "nav": { "today": "Today", "progress": "Progress", "diet": "Diet", "settings": "Settings" },
+  "nav": { "today": "Today", "library": "Library", "progress": "Progress", "diet": "Diet", "settings": "Settings" },
   "common": {
     "next": "Next", "back": "Back", "save": "Save", "cancel": "Cancel",
     "done": "Done", "start": "Start", "finish": "Finish workout", "skip": "Skip",
@@ -80,7 +80,8 @@
     "streak": "day streak",
     "streakBest": "Best: {{n}}",
     "atRisk": "Train today to keep your streak!",
-    "week": "This week"
+    "week": "This week",
+    "viewWorkout": "View workout"
   },
   "workout": {
     "warmup": "Warm-up", "main": "Workout", "cooldown": "Cool-down",
@@ -89,7 +90,17 @@
     "veryEasy": "Very easy", "easy": "Easy", "okay": "Okay", "hard": "Hard", "veryHard": "Very hard",
     "progress": "{{done}} of {{total}} done",
     "finishEarly": "Finish now",
-    "restSec": "{{n}}s rest"
+    "restSec": "{{n}}s rest",
+    "reviewing": "Reviewing"
+  },
+  "library": {
+    "title": "Exercise library",
+    "search": "Search exercises…",
+    "empty": "No exercises match your filters.",
+    "type": {
+      "all": "All", "strength": "Strength", "cardio": "Cardio",
+      "mobility": "Mobility", "stretch": "Stretch", "balance": "Balance"
+    }
   },
   "progress": {
     "title": "Your progress",
@@ -111,6 +122,15 @@
     "profile": "Profile", "editProfile": "Edit profile",
     "reminderHelp": "Reminders are sent by the app running on this device. Keep it running in the background.",
     "regenerate": "Regenerate plan", "regenerateHelp": "Build a fresh week based on your recent workouts.",
-    "about": "Fit-ingo runs entirely on your device. Your data never leaves it."
+    "about": "Fit-ingo runs entirely on your device. Your data never leaves it.",
+    "reset": "Reset app",
+    "resetConfirmTitle": "Reset everything?",
+    "resetConfirmBody": "This wipes your profile, plan, logs and settings. This cannot be undone.",
+    "resetConfirm": "Reset everything",
+    "testNotification": "Send test notification",
+    "termuxDetected": "Termux:API detected ✓",
+    "termuxMissing": "Termux:API not detected",
+    "testSent": "Test sent — check your notifications",
+    "testFailed": "Couldn't send the test notification"
   }
 }

@@ -1,0 +1,94 @@
+.lib-filter-scroll {
+  overflow-x: auto;
+}
+
+.lib-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.lib-card-head {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.lib-name {
+  font-size: 17px;
+  font-weight: 800;
+}
+.lib-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.lib-tag {
+  background: var(--card-2);
+  color: var(--ink-2);
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+}
+.lib-instructions {
+  color: var(--ink-2);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.lib-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.lib-video {
+  color: var(--ember);
+  font-weight: 800;
+  font-size: 14px;
+  text-decoration: none;
+}
+.lib-edit-btn {
+  border: none;
+  background: var(--card-2);
+  color: var(--violet);
+  font-weight: 800;
+  font-size: 13px;
+  padding: 8px 14px;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  margin-left: auto;
+}
+.lib-edit-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.lib-edit-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+.lib-edit-cancel {
+  border: none;
+  background: transparent;
+  color: var(--ink-3);
+  font-weight: 800;
+  font-size: 14px;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+.lib-edit-save {
+  border: none;
+  background: var(--violet);
+  color: #fff;
+  font-weight: 800;
+  font-size: 14px;
+  padding: 8px 16px;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+}
+.lib-edit-save:disabled {
+  opacity: 0.6;
+  cursor: default;
+}

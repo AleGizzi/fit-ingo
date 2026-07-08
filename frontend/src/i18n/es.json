@@ -1,6 +1,6 @@
 {
   "app": { "name": "Fit-ingo", "tagline": "Mantén viva tu racha." },
-  "nav": { "today": "Hoy", "progress": "Progreso", "diet": "Dieta", "settings": "Ajustes" },
+  "nav": { "today": "Hoy", "library": "Biblioteca", "progress": "Progreso", "diet": "Dieta", "settings": "Ajustes" },
   "common": {
     "next": "Siguiente", "back": "Atrás", "save": "Guardar", "cancel": "Cancelar",
     "done": "Hecho", "start": "Empezar", "finish": "Terminar entrenamiento", "skip": "Saltar",
@@ -80,7 +80,8 @@
     "streak": "días de racha",
     "streakBest": "Mejor: {{n}}",
     "atRisk": "¡Entrena hoy para mantener tu racha!",
-    "week": "Esta semana"
+    "week": "Esta semana",
+    "viewWorkout": "Ver entrenamiento"
   },
   "workout": {
     "warmup": "Calentamiento", "main": "Entrenamiento", "cooldown": "Enfriamiento",
@@ -89,7 +90,17 @@
     "veryEasy": "Muy fácil", "easy": "Fácil", "okay": "Normal", "hard": "Difícil", "veryHard": "Muy difícil",
     "progress": "{{done}} de {{total}} hechos",
     "finishEarly": "Terminar ahora",
-    "restSec": "{{n}}s descanso"
+    "restSec": "{{n}}s descanso",
+    "reviewing": "Revisando"
+  },
+  "library": {
+    "title": "Biblioteca de ejercicios",
+    "search": "Buscar ejercicios…",
+    "empty": "Ningún ejercicio coincide con tus filtros.",
+    "type": {
+      "all": "Todos", "strength": "Fuerza", "cardio": "Cardio",
+      "mobility": "Movilidad", "stretch": "Estiramiento", "balance": "Equilibrio"
+    }
   },
   "progress": {
     "title": "Tu progreso",
@@ -111,6 +122,15 @@
     "profile": "Perfil", "editProfile": "Editar perfil",
     "reminderHelp": "Los recordatorios los envía la app en este dispositivo. Mantenla corriendo en segundo plano.",
     "regenerate": "Regenerar plan", "regenerateHelp": "Crea una semana nueva según tus entrenos recientes.",
-    "about": "Fit-ingo funciona totalmente en tu dispositivo. Tus datos nunca salen de él."
+    "about": "Fit-ingo funciona totalmente en tu dispositivo. Tus datos nunca salen de él.",
+    "reset": "Restablecer app",
+    "resetConfirmTitle": "¿Restablecer todo?",
+    "resetConfirmBody": "Esto borra tu perfil, plan, registros y ajustes. No se puede deshacer.",
+    "resetConfirm": "Restablecer todo",
+    "testNotification": "Enviar notificación de prueba",
+    "termuxDetected": "Termux:API detectado ✓",
+    "termuxMissing": "Termux:API no detectado",
+    "testSent": "Prueba enviada — revisa tus notificaciones",
+    "testFailed": "No se pudo enviar la notificación de prueba"
   }
 }

@@ -228,3 +228,29 @@ def get_settings() -> dict:
     d["reminder_enabled"] = bool(d["reminder_enabled"])
     d["nag_enabled"] = bool(d["nag_enabled"])
     return d
+
+
+def clear_activity() -> None:
+    """Wipe workout/weight history (used when the profile changes so the
+    streak and progress charts start clean for the new plan)."""
+    conn = get_conn()
+    with _lock:
+        conn.execute("DELETE FROM workout_log")
+        conn.execute("DELETE FROM weight_log")
+        conn.commit()
+
+
+def reset_all() -> None:
+    """Factory reset: wipe profile, plan and all activity, and restore
+    default settings. The exercise catalog is left untouched."""
+    conn = get_conn()
+    with _lock:
+        conn.execute("DELETE FROM profile")
+        conn.execute("DELETE FROM plan_items")
+        conn.execute("DELETE FROM plan_days")
+        conn.execute("DELETE FROM plan")
+        conn.execute("DELETE FROM workout_log")
+        conn.execute("DELETE FROM weight_log")
+        conn.execute("DELETE FROM settings")
+        conn.execute("INSERT OR IGNORE INTO settings(id) VALUES (1)")
+        conn.commit()

@@ -4,6 +4,7 @@ import { TabBar } from "./components/TabBar";
 import { Onboarding } from "./pages/Onboarding";
 import { Today } from "./pages/Today";
 import { Workout } from "./pages/Workout";
+import { Library } from "./pages/Library";
 import { Progress } from "./pages/Progress";
 import { Diet } from "./pages/Diet";
 import { Settings } from "./pages/Settings";
@@ -38,6 +39,7 @@ function Shell() {
           <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/today" element={<Today />} />
           <Route path="/workout" element={<Workout />} />
+          <Route path="/library" element={<Library />} />
           <Route path="/progress" element={<Progress />} />
           <Route path="/diet" element={<Diet />} />
           <Route path="/settings" element={<Settings />} />

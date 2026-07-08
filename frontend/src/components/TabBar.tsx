@@ -4,6 +4,7 @@ import "./tabbar.css";
 
 const tabs = [
   { to: "/today", key: "today", icon: "🔥" },
+  { to: "/library", key: "library", icon: "📚" },
   { to: "/progress", key: "progress", icon: "📈" },
   { to: "/diet", key: "diet", icon: "🥗" },
   { to: "/settings", key: "settings", icon: "⚙️" },

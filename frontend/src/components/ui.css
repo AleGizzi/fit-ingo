@@ -42,6 +42,10 @@
   --lip: var(--line);
   color: var(--ink);
 }
+.btn-danger {
+  --face: #e5484d;
+  --lip: #a8272b;
+}
 .btn-ghost {
   background: transparent;
   color: var(--ink-2);

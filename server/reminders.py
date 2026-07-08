@@ -42,30 +42,70 @@ MESSAGES = {
 }
 
 
+# Module-level state so the /api/notifications/status endpoint can report on
+# the last attempt without threading extra plumbing through the scheduler.
+last_fired: str | None = None
+last_error: str | None = None
+
+
 def _termux_available() -> bool:
     return shutil.which("termux-notification") is not None
 
 
-def send_notification(title: str, content: str) -> None:
-    """Fire a real Termux notification, or log if not on Termux."""
-    if _termux_available():
-        try:
-            subprocess.run(
-                [
-                    "termux-notification",
-                    "--id", "fitingo",
-                    "--title", title,
-                    "--content", content,
-                    "--action", f"termux-open-url {APP_URL}",
-                    "--priority", "high",
-                ],
-                check=False,
-                timeout=15,
-            )
-        except Exception as exc:  # pragma: no cover - device-only path
-            log.warning("termux-notification failed: %s", exc)
-    else:
+def get_status() -> dict:
+    return {
+        "termux_cli": _termux_available(),
+        "last_fired": last_fired,
+        "last_error": last_error,
+    }
+
+
+def send_notification(title: str, content: str) -> dict:
+    """Fire a real Termux notification, or log a stub if not on Termux.
+
+    Returns a status dict ``{"sent": bool, "termux": bool, "error": str|None}``
+    and updates the module-level ``last_fired``/``last_error`` state so errors
+    are surfaced instead of only logged.
+    """
+    global last_fired, last_error
+    termux = _termux_available()
+
+    if not termux:
+        # Dev path: no device to notify, just log. Counts as "sent" so the
+        # rest of the flow (dedup, UI feedback) behaves the same as on-device.
         log.info("[notification stub] %s — %s", title, content)
+        last_fired = datetime.now().isoformat()
+        last_error = None
+        return {"sent": True, "termux": False, "error": None}
+
+    try:
+        proc = subprocess.run(
+            [
+                "termux-notification",
+                "--id", "fitingo",
+                "--title", title,
+                "--content", content,
+                "--action", f"termux-open-url {APP_URL}",
+                "--priority", "high",
+            ],
+            check=False,
+            timeout=15,
+            capture_output=True,
+            text=True,
+        )
+        if proc.returncode != 0:
+            error = f"termux-notification exited {proc.returncode}: {proc.stderr.strip()}"
+            log.warning(error)
+            last_error = error
+            return {"sent": False, "termux": True, "error": error}
+        last_fired = datetime.now().isoformat()
+        last_error = None
+        return {"sent": True, "termux": True, "error": None}
+    except Exception as exc:  # pragma: no cover - device-only path
+        error = f"termux-notification failed: {exc}"
+        log.warning(error)
+        last_error = error
+        return {"sent": False, "termux": True, "error": error}
 
 
 class ReminderScheduler:

@@ -21,7 +21,7 @@ from flask import Flask, jsonify, request, send_from_directory
 import db
 import diet as diet_engine
 import planner as planner_engine
-from reminders import ReminderScheduler
+from reminders import ReminderScheduler, get_status, send_notification
 from streak import compute_streak
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
@@ -168,7 +168,10 @@ def save_profile():
             )
         conn.commit()
 
-    # (Re)generate the plan whenever the profile changes.
+    # Changing the profile invalidates the current plan's history: wipe
+    # workout/weight logs so the streak and charts start clean, then
+    # (re)generate the plan whenever the profile changes.
+    db.clear_activity()
     profile = db.get_profile()
     plan_id = _regenerate_for_profile(profile)
     return jsonify({"profile": profile, "plan": _plan_to_json(plan_id)})
@@ -383,6 +386,24 @@ def save_settings():
         )
         conn.commit()
     return jsonify(db.get_settings())
+
+
+@app.get("/api/notifications/status")
+def notifications_status():
+    return jsonify(get_status())
+
+
+@app.post("/api/notifications/test")
+def notifications_test():
+    result = send_notification("Fit-ingo", "Test notification ✅")
+    return jsonify(result)
+
+
+@app.post("/api/reset")
+def reset():
+    """Factory reset: wipe profile, plan and history. Exercise catalog stays."""
+    db.reset_all()
+    return jsonify({"ok": True})
 
 
 # --------------------------------------------------------------------------

@@ -79,6 +79,9 @@ export function Today() {
           <div className="today-state-icon">🎉</div>
           <h2 className="today-state-title">{t("today.completed")}</h2>
           <p className="muted">{t("today.completedBody")}</p>
+          <Button variant="soft" onClick={() => nav("/workout")}>
+            {t("today.viewWorkout")}
+          </Button>
         </Card>
       ) : isRest ? (
         <Card className="today-state">

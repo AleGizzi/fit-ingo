@@ -83,3 +83,55 @@ def test_daily_training_all_week():
     r = compute_streak(done, training, today=today.isoformat())
     assert r["current"] == 5
     assert r["best"] == 5
+
+
+# ---- strict-model regression tests ---------------------------------------
+# User-reported bug: completing one training day must not make the *next*
+# day look "already done" — the streak should reflect only the day that was
+# actually completed until another day is explicitly acted on.
+
+def test_next_rest_day_does_not_inflate_streak():
+    # Mon 06-29 completed. Today is Tue 06-30 (a rest day, nothing to do).
+    # The streak must still read as exactly 1 — the rest day is not counted
+    # and does not "carry forward" any extra credit.
+    done = ["2026-06-29"]
+    r = compute_streak(done, TRAINING, today="2026-06-30")
+    assert r["current"] == 1
+    assert r["best"] == 1
+
+
+def test_next_training_day_not_yet_done_does_not_inflate_streak():
+    # Mon 06-29 completed. Today is Wed 07-01 (a training day) but it has NOT
+    # been completed yet. The streak must read as 1 (only Monday), not 2 —
+    # today isn't over yet so it doesn't break the streak, but it also must
+    # not be silently credited.
+    done = ["2026-06-29"]
+    r = compute_streak(done, TRAINING, today="2026-07-01")
+    assert r["current"] == 1
+    assert r["at_risk"] is True
+
+
+def test_missed_wednesday_resets_to_one_walking_back_from_friday():
+    # Training Mon/Wed/Fri. Complete Mon, MISS Wed, complete Fri. Walking
+    # back from Friday itself (today == Fri, already done), the missed
+    # Wednesday must end the run right after Friday: current == 1.
+    done = ["2026-06-29", "2026-07-03"]  # Mon, Fri (Wed 07-01 skipped)
+    r = compute_streak(done, TRAINING, today="2026-07-03")
+    assert r["current"] == 1
+    assert r["at_risk"] is False
+
+
+def test_rest_day_between_two_completed_training_days_keeps_run_intact():
+    # Training Mon/Wed/Fri. Complete Mon and Wed; Tue is a rest day sitting
+    # between them and must not break or dilute the run.
+    done = ["2026-06-29", "2026-07-01"]  # Mon, Wed
+    r = compute_streak(done, TRAINING, today="2026-07-01")
+    assert r["current"] == 2
+    assert r["best"] == 2
+
+
+def test_fresh_profile_empty_history_has_no_streak():
+    # Brand-new profile: no workouts logged yet at all.
+    r = compute_streak([], TRAINING, today="2026-07-05")
+    assert r["current"] == 0
+    assert r["best"] == 0
