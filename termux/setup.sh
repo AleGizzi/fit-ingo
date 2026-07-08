@@ -12,7 +12,7 @@ termux-setup-storage || true
 
 REPO_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 echo "==> Installing Python requirements"
-pip install --upgrade pip
+#pip install --upgrade pip
 pip install -r "$REPO_DIR/server/requirements.txt"
 
 echo
