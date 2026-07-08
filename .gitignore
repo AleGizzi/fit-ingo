@@ -20,3 +20,7 @@ data/
 .DS_Store
 
 # NOTE: frontend/dist/ is intentionally committed so Termux needs no Node.
+
+# UI screenshot harness (local dev tool)
+tools/uicheck/node_modules/
+tools/uicheck/shots/
