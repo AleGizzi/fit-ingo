@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useApp } from "../AppContext";
@@ -18,6 +18,10 @@ export function Workout() {
   const [doneIds, setDoneIds] = useState<Set<string>>(new Set());
   const [showRating, setShowRating] = useState(false);
   const [savedStreak, setSavedStreak] = useState<Streak | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  // Set once the user changes something, so autosave doesn't re-post on load.
+  const dirtyRef = useRef(false);
 
   useEffect(() => {
     api.getToday().then((td) => {
@@ -43,6 +47,7 @@ export function Workout() {
 
   function toggle(item: PlanItem) {
     if (isReviewing) return;
+    dirtyRef.current = true;
     const key = itemKey(item);
     setDoneIds((prev) => {
       const next = new Set(prev);
@@ -51,18 +56,42 @@ export function Workout() {
     });
   }
 
+  // Autosave partial progress (best-effort) so leaving mid-workout never loses
+  // your checkmarks. Kept as completed=false; finishing sets the real state.
+  useEffect(() => {
+    if (isReviewing || !dirtyRef.current) return;
+    const id = setTimeout(() => {
+      api
+        .logWorkout({
+          completed: false,
+          items_done: Array.from(doneIds),
+          items_total: total,
+        })
+        .catch(() => { /* best-effort; the explicit Finish save reports errors */ });
+    }, 600);
+    return () => clearTimeout(id);
+  }, [doneIds, isReviewing, total]);
+
   async function finish(perceived?: number) {
     const completed = doneCount >= Math.ceil(total * 0.6); // 60%+ counts as done
-    const res = await api.logWorkout({
-      completed,
-      items_done: Array.from(doneIds),
-      items_total: total,
-      perceived_difficulty: perceived,
-      duration_min: undefined,
-    });
-    setSavedStreak(res.streak);
-    // Brief celebration, then back to Today.
-    setTimeout(() => nav("/today", { replace: true }), completed ? 1400 : 300);
+    setSaving(true);
+    setSaveError(null);
+    try {
+      const res = await api.logWorkout({
+        completed,
+        items_done: Array.from(doneIds),
+        items_total: total,
+        perceived_difficulty: perceived,
+        duration_min: undefined,
+      });
+      setSavedStreak(res.streak);
+      // Brief celebration, then back to Today.
+      setTimeout(() => nav("/today", { replace: true }), completed ? 1400 : 300);
+    } catch (e) {
+      // Surface the failure instead of silently doing nothing.
+      setSaveError(e instanceof Error ? e.message : String(e));
+      setSaving(false);
+    }
   }
 
   const grouped = BLOCK_ORDER.map((b) => ({
@@ -136,7 +165,12 @@ export function Workout() {
             <h3 className="rating-title">{t("workout.howHard")}</h3>
             <div className="rating-scale">
               {[1, 2, 3, 4, 5].map((n) => (
-                <button key={n} className="rating-dot" onClick={() => finish(n)}>
+                <button
+                  key={n}
+                  className="rating-dot"
+                  disabled={saving}
+                  onClick={() => finish(n)}
+                >
                   <span className="rating-emoji">{["😄", "🙂", "😐", "😓", "🥵"][n - 1]}</span>
                   <span className="rating-lbl">
                     {t(["workout.veryEasy", "workout.easy", "workout.okay", "workout.hard", "workout.veryHard"][n - 1])}
@@ -144,7 +178,12 @@ export function Workout() {
                 </button>
               ))}
             </div>
-            <button className="rating-skip" onClick={() => finish(undefined)}>{t("common.skip")}</button>
+            {saveError && (
+              <p className="rating-error">⚠️ {t("workout.saveError")}<br /><span className="rating-error-detail">{saveError}</span></p>
+            )}
+            <button className="rating-skip" disabled={saving} onClick={() => finish(undefined)}>
+              {saving ? t("common.loading") : saveError ? t("workout.retry") : t("common.skip")}
+            </button>
           </div>
         </div>
       )}

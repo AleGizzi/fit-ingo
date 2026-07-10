@@ -91,7 +91,9 @@
     "progress": "{{done}} de {{total}} hechos",
     "finishEarly": "Terminar ahora",
     "restSec": "{{n}}s descanso",
-    "reviewing": "Revisando"
+    "reviewing": "Revisando",
+    "saveError": "No se pudo guardar tu entrenamiento.",
+    "retry": "Reintentar"
   },
   "library": {
     "title": "Biblioteca de ejercicios",

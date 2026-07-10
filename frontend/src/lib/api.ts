@@ -5,7 +5,13 @@ import type {
 async function j<T>(res: Response): Promise<T> {
   if (!res.ok) {
     const text = await res.text().catch(() => "");
-    throw new Error(`${res.status} ${res.statusText} — ${text}`);
+    // Prefer the server's JSON {error} message when present.
+    let msg = text;
+    try {
+      const parsed = JSON.parse(text);
+      if (parsed?.error) msg = parsed.error;
+    } catch { /* not JSON, use raw text */ }
+    throw new Error(msg || `${res.status} ${res.statusText}`);
   }
   return res.json() as Promise<T>;
 }

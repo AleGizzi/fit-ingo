@@ -135,6 +135,17 @@ def _regenerate_for_profile(profile: dict, week: int = 1) -> int:
 # API
 # --------------------------------------------------------------------------
 
+@app.errorhandler(Exception)
+def handle_unexpected(e):
+    """Always return JSON (not an HTML 500) so the PWA can surface the real
+    error to the user instead of failing silently."""
+    from werkzeug.exceptions import HTTPException
+    if isinstance(e, HTTPException):
+        return e
+    log.exception("Unhandled error on %s", request.path)
+    return jsonify({"error": str(e) or e.__class__.__name__}), 500
+
+
 @app.get("/api/health")
 def health():
     return jsonify({"ok": True, "time": datetime.now().isoformat()})

@@ -91,7 +91,9 @@
     "progress": "{{done}} of {{total}} done",
     "finishEarly": "Finish now",
     "restSec": "{{n}}s rest",
-    "reviewing": "Reviewing"
+    "reviewing": "Reviewing",
+    "saveError": "Couldn't save your workout.",
+    "retry": "Try again"
   },
   "library": {
     "title": "Exercise library",
