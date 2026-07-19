@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { useApp } from "../AppContext";
 import { api } from "../lib/api";
 import { Button, OptionTile, Segmented, Stepper } from "../components/ui";
-import type { Equipment, Goal, Impact, Level, Profile } from "../lib/types";
+import type { Equipment, Goal, Impact, Lang, Level, Profile } from "../lib/types";
 import "./onboarding.css";
 
 const GOALS: Goal[] = ["lose", "maintain", "gain_muscle", "general"];
@@ -19,11 +19,12 @@ const LIMITS = ["knee", "back", "shoulder", "wrist"];
 const TOTAL_STEPS = 7;
 
 export function Onboarding() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const nav = useNavigate();
-  const { reload } = useApp();
+  const { reload, setProfile, settings, setSettings } = useApp();
   const [step, setStep] = useState(0);
   const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   const [p, setP] = useState<Profile>({
     name: "",
@@ -52,16 +53,35 @@ export function Onboarding() {
   const next = () => setStep((s) => Math.min(TOTAL_STEPS, s + 1));
   const back = () => setStep((s) => Math.max(0, s - 1));
 
+  // Onboarding is the only way into the app, so a silent failure here strands
+  // the user on this screen forever — always surface what went wrong.
   async function submit() {
     setSaving(true);
+    setSaveError(null);
     try {
-      await api.saveProfile(p);
-      await reload();
+      const res = await api.saveProfile(p);
+      await reload().catch(() => { /* the POST already succeeded */ });
+      // Trust the profile the server just echoed back, applied *after* reload
+      // so it wins: reload's GET /api/profile is cached NetworkFirst and can
+      // still answer with the pre-onboarding null, which would bounce us
+      // straight back to this screen.
+      setProfile(res.profile);
       nav("/today", { replace: true });
-    } finally {
+    } catch (e) {
+      setSaveError(e instanceof Error ? e.message : String(e));
       setSaving(false);
     }
   }
+
+  function pickLang(v: Lang) {
+    i18n.changeLanguage(v);
+    if (!settings) return; // nothing to persist to yet; i18n still switches
+    const merged = { ...settings, language: v };
+    setSettings(merged);
+    api.saveSettings(merged).then(setSettings).catch(() => { /* stays local */ });
+  }
+
+  const lang: Lang = i18n.language.startsWith("es") ? "es" : "en";
 
   // Step 0 is the welcome screen; steps 1..7 are questions.
   const progress = step === 0 ? 0 : (step / TOTAL_STEPS) * 100;
@@ -80,6 +100,16 @@ export function Onboarding() {
           <div className="onb-flame">🔥</div>
           <h1 className="onb-welcome-title">{t("onboarding.welcome")}</h1>
           <p className="onb-welcome-intro">{t("onboarding.intro")}</p>
+          <div className="onb-lang">
+            <Segmented<Lang>
+              value={lang}
+              onChange={pickLang}
+              options={[
+                { value: "en", label: "English" },
+                { value: "es", label: "Español" },
+              ]}
+            />
+          </div>
           <Button block onClick={next}>{t("onboarding.letsgo")}</Button>
         </div>
       )}
@@ -239,11 +269,22 @@ export function Onboarding() {
 
       {step > 0 && (
         <div className="onb-actions">
+          {saveError && (
+            <p className="onb-error">
+              ⚠️ {t("onboarding.saveError")}
+              <br />
+              <span className="onb-error-detail">{saveError}</span>
+            </p>
+          )}
           {step < TOTAL_STEPS ? (
             <Button block onClick={next}>{t("common.next")}</Button>
           ) : (
             <Button block onClick={submit} disabled={saving}>
-              {saving ? t("onboarding.building") : t("onboarding.buildPlan")}
+              {saving
+                ? t("onboarding.building")
+                : saveError
+                  ? t("workout.retry")
+                  : t("onboarding.buildPlan")}
             </Button>
           )}
         </div>

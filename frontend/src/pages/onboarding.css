@@ -86,6 +86,29 @@
   background: linear-gradient(to top, var(--bg) 70%, transparent);
 }
 
+.onb-lang {
+  width: 100%;
+  margin-top: 22px;
+}
+
+.onb-error {
+  margin: 0 0 12px;
+  text-align: center;
+  color: var(--ember-deep);
+  font-weight: 800;
+  font-size: 14px;
+  line-height: 1.4;
+}
+:root[data-theme="dark"] .onb-error {
+  color: #ff7a5c;
+}
+.onb-error-detail {
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--ink-3);
+  word-break: break-word;
+}
+
 .chip-row {
   display: flex;
   flex-wrap: wrap;

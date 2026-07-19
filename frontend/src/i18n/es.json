@@ -29,7 +29,8 @@
     "limitationsHelp": "Saltaremos ejercicios que carguen estas zonas.",
     "dietTitle": "¿Preferencia de dieta?",
     "buildPlan": "Crear mi plan",
-    "building": "Creando tu plan…"
+    "building": "Creando tu plan…",
+    "saveError": "No se pudo crear tu plan."
   },
   "goal": {
     "lose": "Bajar de peso", "maintain": "Mantenerme", "gain_muscle": "Ganar músculo",
@@ -133,6 +134,11 @@
     "termuxDetected": "Termux:API detectado ✓",
     "termuxMissing": "Termux:API no detectado",
     "testSent": "Prueba enviada — revisa tus notificaciones",
-    "testFailed": "No se pudo enviar la notificación de prueba"
+    "testFailed": "No se pudo enviar la notificación de prueba",
+    "version": "Versión",
+    "checkUpdates": "Buscar actualizaciones",
+    "upToDate": "Estás al día (v{{version}})",
+    "updateApplying": "Actualización encontrada — aplicándola…",
+    "updateFailed": "No se pudo buscar actualizaciones"
   }
 }

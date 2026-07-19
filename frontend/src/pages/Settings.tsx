@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { useApp } from "../AppContext";
 import { api } from "../lib/api";
 import { Button, Card, Segmented } from "../components/ui";
+import { APP_VERSION } from "../lib/version";
 import type { Lang, Settings as SettingsT, Theme } from "../lib/types";
 import "./settings.css";
 
@@ -21,6 +22,8 @@ export function Settings() {
   const [testResult, setTestResult] = useState<{ ok: boolean; message: string } | null>(null);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [resetting, setResetting] = useState(false);
+  const [updateBusy, setUpdateBusy] = useState(false);
+  const [updateMsg, setUpdateMsg] = useState<string | null>(null);
 
   useEffect(() => {
     api.getNotificationStatus().then(setNotifStatus).catch(() => setNotifStatus(null));
@@ -71,6 +74,42 @@ export function Settings() {
       setTestResult({ ok: false, message: t("settings.testFailed") });
     } finally {
       setTestBusy(false);
+    }
+  }
+
+  // Force the browser to re-fetch sw.js instead of waiting for it to notice on
+  // its own. If a newer build exists it installs, takes over (skipWaiting) and
+  // the controllerchange listener in main.tsx reloads onto it. With no update
+  // we report the running version, so a stale phone is diagnosable on the spot.
+  async function checkForUpdates() {
+    setUpdateBusy(true);
+    setUpdateMsg(null);
+    try {
+      if (!("serviceWorker" in navigator)) {
+        window.location.reload();
+        return;
+      }
+      const reg = await navigator.serviceWorker.getRegistration();
+      if (!reg) {
+        window.location.reload();
+        return;
+      }
+      await reg.update(); // re-fetches sw.js, bypassing the HTTP cache
+
+      // Only a page that already has a controller can be out of date; without
+      // one this is the first install, which is current by definition.
+      const pending = reg.installing || reg.waiting;
+      if (navigator.serviceWorker.controller && pending) {
+        // sw.js is generated with skipWaiting, so it takes over on its own as
+        // soon as it finishes installing — nothing to nudge here.
+        setUpdateMsg(t("settings.updateApplying"));
+      } else {
+        setUpdateMsg(t("settings.upToDate", { version: APP_VERSION }));
+      }
+    } catch (e) {
+      setUpdateMsg(e instanceof Error ? e.message : t("settings.updateFailed"));
+    } finally {
+      setUpdateBusy(false);
     }
   }
 
@@ -203,6 +242,17 @@ export function Settings() {
         <Button variant="ghost" onClick={() => nav("/onboarding")}>
           {t("settings.editProfile")}
         </Button>
+      </Card>
+
+      <Card className="stack">
+        <div className="spread">
+          <label className="field-label" style={{ margin: 0 }}>{t("settings.version")}</label>
+          <span className="num version-value">{APP_VERSION}</span>
+        </div>
+        <Button variant="soft" onClick={checkForUpdates} disabled={updateBusy}>
+          {updateBusy ? t("common.loading") : t("settings.checkUpdates")}
+        </Button>
+        {updateMsg && <p className="muted setting-help">{updateMsg}</p>}
       </Card>
 
       <Card className="stack">

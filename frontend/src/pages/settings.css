@@ -143,3 +143,8 @@
   from { transform: translateY(100%); }
   to { transform: translateY(0); }
 }
+
+.version-value {
+  font-weight: 800;
+  color: var(--ink-2);
+}

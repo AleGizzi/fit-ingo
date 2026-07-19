@@ -29,7 +29,8 @@
     "limitationsHelp": "We'll skip exercises that stress these areas.",
     "dietTitle": "Any diet preference?",
     "buildPlan": "Build my plan",
-    "building": "Building your plan…"
+    "building": "Building your plan…",
+    "saveError": "Couldn't build your plan."
   },
   "goal": {
     "lose": "Lose weight", "maintain": "Stay fit", "gain_muscle": "Build muscle",
@@ -133,6 +134,11 @@
     "termuxDetected": "Termux:API detected ✓",
     "termuxMissing": "Termux:API not detected",
     "testSent": "Test sent — check your notifications",
-    "testFailed": "Couldn't send the test notification"
+    "testFailed": "Couldn't send the test notification",
+    "version": "Version",
+    "checkUpdates": "Check for updates",
+    "upToDate": "You're up to date (v{{version}})",
+    "updateApplying": "Update found — applying it now…",
+    "updateFailed": "Couldn't check for updates"
   }
 }

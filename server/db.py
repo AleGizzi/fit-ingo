@@ -22,9 +22,14 @@ SEED_DIR = HERE / "seed"
 DEFAULT_DB = HERE / "data" / "fitingo.db"
 SCHEMA_VERSION = 1
 
-# One connection guarded by a lock. SQLite handles our tiny single-user load
-# fine, and the reminder thread + request threads share this module.
-_conn = None
+# One connection *per thread*. Flask serves threaded and the reminder thread
+# touches the DB too; sharing a single connection across them interleaves
+# execute/fetch on the same cursor, which intermittently yields a phantom empty
+# result (`dict(None)` -> TypeError) on perfectly good data. WAL gives us
+# concurrent readers plus one writer, which is exactly this workload, and
+# `_lock` still serializes our own multi-statement writes.
+_local = threading.local()
+_schema_ready = False
 _lock = threading.RLock()
 
 
@@ -33,18 +38,23 @@ def db_path() -> Path:
 
 
 def get_conn() -> sqlite3.Connection:
-    global _conn
-    if _conn is None:
+    global _schema_ready
+    conn = getattr(_local, "conn", None)
+    if conn is None:
+        path = db_path()
+        path.parent.mkdir(parents=True, exist_ok=True)
+        # timeout: wait out a concurrent writer instead of raising "database
+        # is locked" — writes here are tiny, so this should never be hit.
+        conn = sqlite3.connect(str(path), timeout=10.0)
+        conn.row_factory = sqlite3.Row
+        conn.execute("PRAGMA journal_mode=WAL")
+        conn.execute("PRAGMA foreign_keys=ON")
+        _local.conn = conn
         with _lock:
-            if _conn is None:
-                path = db_path()
-                path.parent.mkdir(parents=True, exist_ok=True)
-                _conn = sqlite3.connect(str(path), check_same_thread=False)
-                _conn.row_factory = sqlite3.Row
-                _conn.execute("PRAGMA journal_mode=WAL")
-                _conn.execute("PRAGMA foreign_keys=ON")
-                _init_schema(_conn)
-    return _conn
+            if not _schema_ready:
+                _init_schema(conn)
+                _schema_ready = True
+    return conn
 
 
 def _init_schema(conn: sqlite3.Connection) -> None:
@@ -223,6 +233,13 @@ def get_profile() -> dict | None:
 def get_settings() -> dict:
     conn = get_conn()
     row = conn.execute("SELECT * FROM settings WHERE id=1").fetchone()
+    if row is None:
+        # Only reachable if the singleton row was lost (an interrupted reset);
+        # recreate the defaults rather than 500 on every request from then on.
+        with _lock:
+            conn.execute("INSERT OR IGNORE INTO settings(id) VALUES (1)")
+            conn.commit()
+        row = conn.execute("SELECT * FROM settings WHERE id=1").fetchone()
     d = dict(row)
     d["reminder_times"] = json.loads(d.get("reminder_times") or "[]")
     d["reminder_enabled"] = bool(d["reminder_enabled"])
