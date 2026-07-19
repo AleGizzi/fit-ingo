@@ -52,6 +52,17 @@ Android phone
    Launch it from the home screen for the full-screen app.
 5. In the app: finish onboarding, then **Settings → Reminders** to set your times.
 
+### Updating
+
+```bash
+bash termux/update.sh
+```
+
+Pulls the latest version, syncs Python deps, and restarts the server. Then open
+the app, close it, and reopen — the service worker swaps to the new build in the
+background (**Settings → Version** shows what's running; **Check for updates**
+forces the swap).
+
 **Make reminders reliable:** Android → Settings → Apps → Termux → Battery →
 allow unrestricted / disable optimization. `start.sh` already takes a wake-lock.
 Keep Termux running in the background (its persistent notification).
