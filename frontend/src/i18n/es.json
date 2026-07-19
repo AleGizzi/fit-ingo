@@ -96,6 +96,25 @@
     "saveError": "No se pudo guardar tu entrenamiento.",
     "retry": "Reintentar"
   },
+  "water": {
+    "title": "Agua de hoy",
+    "goalReached": "¡Meta cumplida!",
+    "reminders": "Recordatorios de agua",
+    "goal": "Meta diaria",
+    "every": "Recordar cada",
+    "window": "Entre",
+    "help": "Los avisos de agua se detienen al alcanzar tu meta del día."
+  },
+  "health": {
+    "title": "Datos de reloj y pulsera",
+    "import": "Importar archivos .FIT",
+    "imported": "{{acts}} actividades importadas, {{days}} días actualizados",
+    "empty": "Conecta un reloj Garmin o pulsera fitness importando sus archivos .FIT — las actividades y el bienestar diario (pasos, pulso en reposo) aparecen aquí. Expórtalos desde tu reloj por USB (carpetas GARMIN/Activity y GARMIN/Monitor) o desde Garmin Connect. Todo se queda en este dispositivo.",
+    "steps": "Pasos diarios",
+    "stepsLatest": "Último: {{n}} pasos",
+    "restingHr": "Pulso en reposo",
+    "activities": "Actividades recientes"
+  },
   "quick": {
     "bonus": "Extra — cuando quieras, sin racha",
     "quickTitle": "Entreno rápido",

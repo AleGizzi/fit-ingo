@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useApp } from "../AppContext";
 import { api } from "../lib/api";
-import { Button, Card, Segmented } from "../components/ui";
+import { Button, Card, Segmented, Stepper } from "../components/ui";
 import { APP_VERSION } from "../lib/version";
 import type { Lang, Settings as SettingsT, Theme } from "../lib/types";
 import "./settings.css";
@@ -226,6 +226,61 @@ export function Settings() {
         </Button>
         {testResult && (
           <p className={testResult.ok ? "notif-ok" : "notif-warn"}>{testResult.message}</p>
+        )}
+      </Card>
+
+      <Card className="stack">
+        <div className="spread">
+          <label className="field-label" style={{ margin: 0 }}>💧 {t("water.reminders")}</label>
+          <Toggle
+            on={settings.water_reminder_enabled}
+            onChange={(v) => patch({ water_reminder_enabled: v })}
+          />
+        </div>
+        <div className="spread">
+          <label className="field-label" style={{ margin: 0 }}>{t("water.goal")}</label>
+          <Stepper
+            value={settings.water_goal_ml}
+            min={1000}
+            max={4000}
+            step={250}
+            suffix=" ml"
+            onChange={(v) => patch({ water_goal_ml: v })}
+          />
+        </div>
+        {settings.water_reminder_enabled && (
+          <>
+            <div className="spread">
+              <label className="field-label" style={{ margin: 0 }}>{t("water.every")}</label>
+              <Stepper
+                value={settings.water_interval_min}
+                min={30}
+                max={240}
+                step={30}
+                suffix=" min"
+                onChange={(v) => patch({ water_interval_min: v })}
+              />
+            </div>
+            <div className="spread">
+              <label className="field-label" style={{ margin: 0 }}>{t("water.window")}</label>
+              <div className="water-window">
+                <input
+                  type="time"
+                  className="time-input"
+                  value={settings.water_start}
+                  onChange={(e) => patch({ water_start: e.target.value })}
+                />
+                <span className="muted">–</span>
+                <input
+                  type="time"
+                  className="time-input"
+                  value={settings.water_end}
+                  onChange={(e) => patch({ water_end: e.target.value })}
+                />
+              </div>
+            </div>
+            <p className="muted setting-help">{t("water.help")}</p>
+          </>
         )}
       </Card>
 

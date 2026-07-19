@@ -8,7 +8,7 @@ import { Flame } from "../components/Flame";
 import { WeekRing } from "../components/WeekRing";
 import type { DayState } from "../components/WeekRing";
 import { estimateMinutes, exName, todayWeekday } from "../lib/format";
-import type { Metrics, Plan, Streak, Today as TodayT } from "../lib/types";
+import type { Metrics, Plan, Streak, Today as TodayT, WaterToday } from "../lib/types";
 import "./today.css";
 
 export function Today() {
@@ -19,6 +19,7 @@ export function Today() {
   const [streak, setStreak] = useState<Streak | null>(null);
   const [plan, setPlan] = useState<Plan | null>(null);
   const [metrics, setMetrics] = useState<Metrics | null>(null);
+  const [water, setWater] = useState<WaterToday | null>(null);
 
   useEffect(() => {
     Promise.all([
@@ -26,13 +27,26 @@ export function Today() {
       api.getStreak().catch(() => null),
       api.getPlan().catch(() => null),
       api.getMetrics().catch(() => null),
-    ]).then(([td, st, pl, mt]) => {
+      api.getWater().catch(() => null),
+    ]).then(([td, st, pl, mt, wt]) => {
       setToday(td);
       setStreak(st);
       setPlan(pl);
       setMetrics(mt);
+      setWater(wt);
     });
   }, []);
+
+  async function drink(delta: number) {
+    if (!water) return;
+    // Optimistic; the response corrects if the server clamps.
+    setWater({ ...water, ml: Math.max(0, water.ml + delta) });
+    try {
+      setWater(await api.logWater(delta));
+    } catch {
+      setWater(await api.getWater().catch(() => water));
+    }
+  }
 
   if (!today || !streak) {
     return <p className="muted">{t("common.loading")}</p>;
@@ -111,6 +125,34 @@ export function Today() {
           <Button block onClick={() => nav("/workout")}>
             {today.log ? t("today.resume") : t("today.startWorkout")}
           </Button>
+        </Card>
+      )}
+
+      {water && (
+        <Card className="water-card">
+          <div className="spread">
+            <div>
+              <span className="eyebrow">💧 {t("water.title")}</span>
+              <div className="water-amount num">
+                {(water.ml / 1000).toFixed(water.ml % 1000 ? 2 : 1)} L
+                <span className="water-goal"> / {(water.goal_ml / 1000).toFixed(1)} L</span>
+              </div>
+            </div>
+            {water.ml >= water.goal_ml && <span className="water-done">✓ {t("water.goalReached")}</span>}
+          </div>
+          <div className="water-track">
+            <div
+              className="water-fill"
+              style={{ width: `${Math.min(100, (water.ml / water.goal_ml) * 100)}%` }}
+            />
+          </div>
+          <div className="water-actions">
+            <button className="water-btn" onClick={() => drink(250)}>🥛 +250</button>
+            <button className="water-btn" onClick={() => drink(500)}>🍶 +500</button>
+            <button className="water-btn water-undo" onClick={() => drink(-250)} disabled={water.ml === 0}>
+              {t("workout.undo")}
+            </button>
+          </div>
         </Card>
       )}
 

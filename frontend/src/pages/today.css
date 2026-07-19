@@ -163,3 +163,58 @@
   color: var(--ink-3);
   line-height: 1.3;
 }
+
+/* Water tracking */
+.water-amount {
+  font-size: 24px;
+  margin-top: 2px;
+}
+.water-goal {
+  font-size: 15px;
+  color: var(--ink-3);
+}
+.water-done {
+  color: var(--mint);
+  font-weight: 800;
+  font-size: 13px;
+}
+.water-track {
+  height: 12px;
+  background: var(--track);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+  margin: 12px 0;
+}
+.water-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #38bdf8, #2563eb);
+  border-radius: var(--radius-pill);
+  transition: width 0.3s cubic-bezier(0.2, 0, 0, 1);
+}
+.water-actions {
+  display: flex;
+  gap: 8px;
+}
+.water-btn {
+  flex: 1;
+  border: 1px solid var(--line);
+  background: var(--card-2);
+  color: var(--ink);
+  font-weight: 800;
+  font-size: 14px;
+  padding: 10px 0;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: transform var(--tap);
+}
+.water-btn:active {
+  transform: scale(0.95);
+}
+.water-undo {
+  flex: 0.7;
+  color: var(--ink-3);
+}
+.water-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}

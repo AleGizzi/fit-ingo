@@ -2,6 +2,21 @@
 
 Versions track the PWA (`frontend/src/lib/version.ts`), shown in Settings ▸ Version.
 
+## 1.3.0
+
+- **Water tracking** — a 💧 card on Today (+250 / +500 ml, undo, progress bar
+  toward a configurable daily goal) and optional hourly-style reminders:
+  pick the interval and waking window in Settings; nudges stop once the goal
+  is reached. Water history resets with profile changes like other activity.
+- **Watch & fit-band import** — Progress grows a "Watch & band data" section.
+  Import the `.FIT` files a Garmin watch or band records (activities and
+  daily wellness) and get: daily-steps chart, resting-heart-rate trend, and
+  a recent-activities list (sport, duration, distance, avg/max HR, calories).
+  Parsing is fully local (`fitdecode`, pure Python — runs in Termux); no
+  Garmin Connect account or cloud involved. Re-importing the same file is
+  safe (deduped by activity start time).
+- Schema migrates in place (v1 → v2) — existing data is preserved.
+
 ## 1.2.0
 
 - **Bonus mini-sessions** on the Today page — always available, never touch

@@ -55,6 +55,37 @@ export interface PlanDay {
   items: PlanItem[];
 }
 
+export interface WaterToday {
+  date: string;
+  ml: number;
+  goal_ml: number;
+  history?: { date: string; ml: number }[];
+}
+
+export interface HealthDaily {
+  date: string;
+  steps: number | null;
+  resting_hr: number | null;
+  calories: number | null;
+}
+
+export interface Activity {
+  id: number;
+  start_ts: string;
+  sport: string;
+  duration_min: number | null;
+  distance_km: number | null;
+  avg_hr: number | null;
+  max_hr: number | null;
+  calories: number | null;
+  source_file: string;
+}
+
+export interface HealthSummary {
+  daily: HealthDaily[];
+  activities: Activity[];
+}
+
 export type QuickKind = "quick" | "desk" | "wellness";
 
 /** A bonus mini-session — generated on demand, never logged, no streak. */
@@ -100,6 +131,11 @@ export interface Settings {
   reminder_times: string[];
   nag_enabled: boolean;
   nag_time: string;
+  water_goal_ml: number;
+  water_reminder_enabled: boolean;
+  water_interval_min: number;
+  water_start: string;
+  water_end: string;
 }
 
 export interface DietInfo {

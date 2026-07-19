@@ -1,6 +1,6 @@
 import type {
-  DietInfo, Exercise, Metrics, Plan, Profile, QuickKind, QuickSession,
-  Settings, Streak, Today,
+  DietInfo, Exercise, HealthSummary, Metrics, Plan, Profile, QuickKind,
+  QuickSession, Settings, Streak, Today, WaterToday,
 } from "./types";
 
 async function j<T>(res: Response): Promise<T> {
@@ -59,6 +59,19 @@ export const api = {
     post("/api/weight", { weight_kg, date }).then(j<{ ok: boolean }>),
 
   getDiet: () => fetch("/api/diet").then(j<DietInfo>),
+
+  getWater: () => fetch("/api/water").then(j<WaterToday>),
+  logWater: (delta_ml: number) =>
+    post("/api/water", { delta_ml }).then(j<WaterToday>),
+
+  getHealthSummary: () => fetch("/api/health/summary").then(j<HealthSummary>),
+  importHealth: (files: FileList | File[]) => {
+    const form = new FormData();
+    for (const f of Array.from(files)) form.append("files", f);
+    return fetch("/api/health/import", { method: "POST", body: form }).then(
+      j<{ activities_imported: number; days_updated: number; errors: string[] }>,
+    );
+  },
 
   getSettings: () => fetch("/api/settings").then(j<Settings>),
   saveSettings: (s: Partial<Settings>) => post("/api/settings", s).then(j<Settings>),

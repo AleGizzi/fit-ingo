@@ -33,11 +33,13 @@ MESSAGES = {
         "title": "Fit-ingo",
         "reminder": "Time to move! Your workout is waiting. 💪",
         "nag": "Don't lose your streak! A few minutes is all it takes. 🔥",
+        "water": "Hydration check — have a glass of water. 💧",
     },
     "es": {
         "title": "Fit-ingo",
         "reminder": "¡Hora de moverte! Tu entrenamiento te espera. 💪",
         "nag": "¡No pierdas tu racha! Solo te toma unos minutos. 🔥",
+        "water": "Momento de hidratarte — toma un vaso de agua. 💧",
     },
 }
 
@@ -108,13 +110,33 @@ def send_notification(title: str, content: str) -> dict:
         return {"sent": False, "termux": True, "error": error}
 
 
+def water_slots(start: str, end: str, interval_min: int) -> set[str]:
+    """HH:MM times at which a water reminder is due: start, start+interval, …
+    up to and including end. Defensive about bad input (empty on nonsense)."""
+    try:
+        sh, sm = map(int, start.split(":"))
+        eh, em = map(int, end.split(":"))
+    except (ValueError, AttributeError):
+        return set()
+    interval = max(15, int(interval_min or 120))  # floor: never spam < 15 min
+    t, stop = sh * 60 + sm, eh * 60 + em
+    slots = set()
+    while t <= stop:
+        slots.add(f"{t // 60:02d}:{t % 60:02d}")
+        t += interval
+    return slots
+
+
 class ReminderScheduler:
     """Owns the background thread. Callbacks decouple it from db/app modules."""
 
-    def __init__(self, get_settings, get_training_weekdays, is_today_done):
+    def __init__(self, get_settings, get_training_weekdays, is_today_done,
+                 get_water_today=None):
         self._get_settings = get_settings
         self._get_training_weekdays = get_training_weekdays
         self._is_today_done = is_today_done
+        # () -> (ml_drunk, goal_ml); optional so old wiring keeps working.
+        self._get_water_today = get_water_today
         self._thread: threading.Thread | None = None
         self._stop = threading.Event()
         # Remembers "YYYY-MM-DD HH:MM kind" strings already fired today.
@@ -146,9 +168,16 @@ class ReminderScheduler:
             self._last_day = today
 
         settings = self._get_settings()
+        lang = settings.get("language", "en")
+        msg = MESSAGES.get(lang, MESSAGES["en"])
+        hhmm = now.strftime("%H:%M")
+
+        self._tick_workout(settings, today, hhmm, msg)
+        self._tick_water(settings, today, hhmm, msg)
+
+    def _tick_workout(self, settings: dict, today: date, hhmm: str, msg: dict) -> None:
         if not settings.get("reminder_enabled"):
             return
-
         # Only nag on scheduled training days.
         if today.weekday() not in set(self._get_training_weekdays()):
             return
@@ -156,16 +185,26 @@ class ReminderScheduler:
         if self._is_today_done():
             return
 
-        lang = settings.get("language", "en")
-        msg = MESSAGES.get(lang, MESSAGES["en"])
-        hhmm = now.strftime("%H:%M")
-
         for t in settings.get("reminder_times", []):
             if t == hhmm:
                 self._fire(today, hhmm, "reminder", msg["title"], msg["reminder"])
 
         if settings.get("nag_enabled") and settings.get("nag_time") == hhmm:
             self._fire(today, hhmm, "nag", msg["title"], msg["nag"])
+
+    def _tick_water(self, settings: dict, today: date, hhmm: str, msg: dict) -> None:
+        """Every ``water_interval_min`` inside the waking window, until the
+        daily goal is reached. Fires on every day — hydration has no rest days."""
+        if not settings.get("water_reminder_enabled") or not self._get_water_today:
+            return
+        if hhmm not in water_slots(settings.get("water_start", "09:00"),
+                                   settings.get("water_end", "21:00"),
+                                   int(settings.get("water_interval_min") or 120)):
+            return
+        ml, goal = self._get_water_today()
+        if ml >= goal:
+            return
+        self._fire(today, hhmm, "water", msg["title"], msg["water"])
 
     def _fire(self, today: date, hhmm: str, kind: str, title: str, content: str) -> None:
         key = f"{today.isoformat()} {hhmm} {kind}"

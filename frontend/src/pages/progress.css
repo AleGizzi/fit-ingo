@@ -59,6 +59,10 @@
   color: var(--violet);
   font-size: 15px;
 }
+/* HR chart draws in ember; its latest label should match the line. */
+.chart-latest-hr {
+  color: var(--ember);
+}
 
 .weight-form {
   display: flex;
@@ -97,4 +101,59 @@
   border-radius: 6px 6px 0 0;
   min-height: 3px;
   transition: height 0.4s cubic-bezier(0.2, 0, 0, 1);
+}
+
+/* Health / wearable section */
+.health-sub {
+  display: block;
+  font-weight: 800;
+  font-size: 13px;
+  color: var(--ink-2);
+  margin-bottom: 8px;
+}
+.bars-steps .bar-fill.bar-steps {
+  background: linear-gradient(to top, #2563eb, #38bdf8);
+}
+.health-latest {
+  font-size: 12px;
+  margin-top: 6px;
+}
+.activity-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.activity-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  background: var(--card-2);
+  border-radius: var(--radius-sm);
+}
+.activity-icon {
+  font-size: 22px;
+  flex: none;
+}
+.activity-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.activity-sport {
+  font-weight: 800;
+  font-size: 14px;
+  text-transform: capitalize;
+}
+.activity-bits {
+  font-size: 12px;
+  color: var(--ink-2);
+}
+.activity-date {
+  font-size: 12px;
+  color: var(--ink-3);
+  flex: none;
 }

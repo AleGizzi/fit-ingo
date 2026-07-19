@@ -67,6 +67,26 @@ forces the swap).
 allow unrestricted / disable optimization. `start.sh` already takes a wake-lock.
 Keep Termux running in the background (its persistent notification).
 
+### Watch / fit-band data (optional)
+
+**Progress → Watch & band data → Import .FIT files.** Fit-ingo reads the
+`.FIT` files Garmin watches and most fit bands record — activities (sport,
+duration, distance, heart rate, calories) and daily wellness (steps, resting
+HR) — and charts them. Getting the files, fully offline:
+
+- **USB**: plug the watch into a computer (or the phone with OTG) — activity
+  files live in `GARMIN/Activity/`, daily wellness in `GARMIN/Monitor/`.
+- **Garmin Connect** (if you use it): every activity page has
+  *Export Original* → a `.zip` with the `.FIT` inside.
+
+Parsing happens on-device (`fitdecode`, pure Python); nothing is uploaded
+anywhere. Re-importing the same files is safe — duplicates are skipped.
+
+No watch? A phone by itself counts steps (Google Fit / any pedometer app uses
+the accelerometer), but there's no export path from those apps into Fit-ingo
+yet, and a phone has no heart-rate sensor — Google Fit's camera trick gives
+only spot readings. Continuous HR needs a band/watch.
+
 ### Notifications not working?
 
 Both the **Termux:API app** (installed from the same source as Termux — F-Droid or Play, not mixed) and the **`termux-api` package** (`pkg install termux-api`) are required. Android 13+ also needs notification permission granted to Termux:API in Settings. Try the in-app **Settings → Send test notification** button, and see `termux/TROUBLESHOOTING.md` for full diagnostics.

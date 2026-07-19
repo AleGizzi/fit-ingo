@@ -96,6 +96,25 @@
     "saveError": "Couldn't save your workout.",
     "retry": "Try again"
   },
+  "water": {
+    "title": "Water today",
+    "goalReached": "Goal reached!",
+    "reminders": "Water reminders",
+    "goal": "Daily goal",
+    "every": "Remind every",
+    "window": "Between",
+    "help": "Water nudges stop for the day once you reach your goal."
+  },
+  "health": {
+    "title": "Watch & band data",
+    "import": "Import .FIT files",
+    "imported": "Imported {{acts}} activities, {{days}} days updated",
+    "empty": "Connect a Garmin watch or fit band by importing its .FIT files — activities and daily wellness (steps, resting heart rate) show up here. Export them from your watch via USB (GARMIN/Activity and GARMIN/Monitor folders) or from Garmin Connect. Everything stays on this device.",
+    "steps": "Daily steps",
+    "stepsLatest": "Latest: {{n}} steps",
+    "restingHr": "Resting heart rate",
+    "activities": "Recent activities"
+  },
   "quick": {
     "bonus": "Bonus — anytime, no streak needed",
     "quickTitle": "Quick workout",

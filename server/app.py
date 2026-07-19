@@ -21,6 +21,7 @@ from flask import Flask, jsonify, request, send_from_directory
 import db
 import diet as diet_engine
 import planner as planner_engine
+import health as health_engine
 import quick as quick_engine
 from reminders import ReminderScheduler, get_status, send_notification
 from streak import compute_streak
@@ -385,6 +386,63 @@ def get_diet():
     return jsonify({"targets": t, "suggestions": suggestions})
 
 
+@app.get("/api/water")
+def get_water():
+    day = request.args.get("date") or _today_iso()
+    settings = db.get_settings()
+    return jsonify({
+        "date": day,
+        "ml": db.get_water(day),
+        "goal_ml": settings["water_goal_ml"],
+        "history": db.water_history(14),
+    })
+
+
+@app.post("/api/water")
+def log_water():
+    """Add (or, with a negative delta, undo) a drink for today."""
+    body = request.get_json(force=True) or {}
+    delta = int(body.get("delta_ml") or 0)
+    day = body.get("date") or _today_iso()
+    ml = db.add_water(day, delta)
+    return jsonify({"date": day, "ml": ml,
+                    "goal_ml": db.get_settings()["water_goal_ml"]})
+
+
+@app.post("/api/health/import")
+def health_import():
+    """Import wearable .FIT files (multipart form, field name 'files')."""
+    files = request.files.getlist("files")
+    if not files:
+        return jsonify({"error": "no files uploaded"}), 400
+    new_activities = 0
+    days_updated: set[str] = set()
+    errors: list[str] = []
+    for f in files:
+        try:
+            parsed = health_engine.parse_fit_bytes(f.read(), f.filename or "upload.fit")
+        except ValueError as exc:
+            errors.append(f"{f.filename}: {exc}")
+            continue
+        for act in parsed["activities"]:
+            if db.insert_activity(act):
+                new_activities += 1
+        for day, vals in parsed["daily"].items():
+            db.upsert_health_daily(day, vals["steps"], vals["resting_hr"],
+                                   vals["calories"], f.filename or "upload.fit")
+            days_updated.add(day)
+    return jsonify({
+        "activities_imported": new_activities,
+        "days_updated": len(days_updated),
+        "errors": errors,
+    })
+
+
+@app.get("/api/health/summary")
+def health_summary():
+    return jsonify(db.health_summary())
+
+
 @app.get("/api/settings")
 def get_settings():
     return jsonify(db.get_settings())
@@ -401,11 +459,19 @@ def save_settings():
     rem_times = json.dumps(body.get("reminder_times", cur["reminder_times"]))
     nag_en = int(bool(body.get("nag_enabled", cur["nag_enabled"])))
     nag_time = body.get("nag_time", cur["nag_time"])
+    water_goal = int(body.get("water_goal_ml", cur["water_goal_ml"]))
+    water_en = int(bool(body.get("water_reminder_enabled", cur["water_reminder_enabled"])))
+    water_int = int(body.get("water_interval_min", cur["water_interval_min"]))
+    water_start = body.get("water_start", cur["water_start"])
+    water_end = body.get("water_end", cur["water_end"])
     with db._lock:
         conn.execute(
             """UPDATE settings SET language=?, theme=?, reminder_enabled=?,
-               reminder_times=?, nag_enabled=?, nag_time=? WHERE id=1""",
-            (lang, theme, rem_en, rem_times, nag_en, nag_time),
+               reminder_times=?, nag_enabled=?, nag_time=?,
+               water_goal_ml=?, water_reminder_enabled=?, water_interval_min=?,
+               water_start=?, water_end=? WHERE id=1""",
+            (lang, theme, rem_en, rem_times, nag_en, nag_time,
+             water_goal, water_en, water_int, water_start, water_end),
         )
         conn.commit()
     return jsonify(db.get_settings())
@@ -452,10 +518,15 @@ def serve_spa(path: str = ""):
 # Boot
 # --------------------------------------------------------------------------
 
+def _water_today() -> tuple[int, int]:
+    return db.get_water(_today_iso()), db.get_settings()["water_goal_ml"]
+
+
 scheduler = ReminderScheduler(
     get_settings=db.get_settings,
     get_training_weekdays=training_weekdays,
     is_today_done=is_today_done,
+    get_water_today=_water_today,
 )
 
 

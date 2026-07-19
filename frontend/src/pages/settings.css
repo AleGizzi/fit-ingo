@@ -148,3 +148,9 @@
   font-weight: 800;
   color: var(--ink-2);
 }
+
+.water-window {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
