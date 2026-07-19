@@ -157,3 +157,76 @@
   color: var(--ink-3);
   flex: none;
 }
+
+/* Garmin setup guide */
+.guide-link {
+  border: none;
+  background: transparent;
+  color: var(--violet);
+  font-weight: 800;
+  font-size: 14px;
+  cursor: pointer;
+  text-align: left;
+  padding: 0;
+}
+.guide-sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgba(10, 8, 16, 0.5);
+  animation: fade 0.2s ease;
+}
+.guide-card {
+  background: var(--card);
+  border-radius: 26px 26px 0 0;
+  padding: 24px 20px max(24px, env(safe-area-inset-bottom));
+  width: 100%;
+  max-width: 520px;
+  max-height: 82vh;
+  overflow-y: auto;
+  animation: slideup 0.28s cubic-bezier(0.2, 0, 0, 1);
+}
+.guide-title {
+  font-size: 20px;
+  font-weight: 900;
+}
+.guide-intro {
+  margin: 10px 0 16px;
+  line-height: 1.5;
+}
+.guide-steps {
+  margin: 0;
+  padding-left: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.guide-steps li::marker {
+  font-weight: 900;
+  color: var(--ember);
+}
+.guide-steps strong {
+  font-size: 15px;
+}
+.guide-steps p {
+  margin: 4px 0 0;
+  color: var(--ink-2);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.guide-note {
+  margin-top: 18px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+@keyframes fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes slideup {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}

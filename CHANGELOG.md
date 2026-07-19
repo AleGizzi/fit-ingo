@@ -15,6 +15,9 @@ Versions track the PWA (`frontend/src/lib/version.ts`), shown in Settings ▸ Ve
   Parsing is fully local (`fitdecode`, pure Python — runs in Termux); no
   Garmin Connect account or cloud involved. Re-importing the same file is
   safe (deduped by activity start time).
+- **In-app Garmin setup guide** (Progress → "Garmin setup guide") — 6 steps to
+  pair a Garmin over Bluetooth via Gadgetbridge (F-Droid), no Garmin account,
+  and feed its .FIT files into the dashboard. Ready for when hardware arrives.
 - Schema migrates in place (v1 → v2) — existing data is preserved.
 
 ## 1.2.0

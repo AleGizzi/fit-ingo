@@ -113,7 +113,25 @@
     "steps": "Daily steps",
     "stepsLatest": "Latest: {{n}} steps",
     "restingHr": "Resting heart rate",
-    "activities": "Recent activities"
+    "activities": "Recent activities",
+    "guide": {
+      "button": "Garmin setup guide (no cloud)",
+      "title": "Garmin, without the cloud",
+      "intro": "Pair a Garmin watch straight to this phone over Bluetooth — no Garmin account, no data leaving your device. The bridge app is Gadgetbridge: open source, offline, no sign-up.",
+      "s1t": "Pick a supported Garmin",
+      "s1b": "Good choices: Forerunner 165 / 255 / 265 / 965, Venu & Venu Sq, Vívoactive, Fénix 6/7/8. Check gadgetbridge.org → Gadgets → Garmin for the full list.",
+      "s2t": "Install Gadgetbridge from F-Droid",
+      "s2b": "Install the F-Droid store (f-droid.org), then Gadgetbridge from it. Skip Google Play versions and do NOT install Garmin Connect — the watch must not be paired to Garmin's own app.",
+      "s3t": "Pair the watch inside Gadgetbridge",
+      "s3b": "Gadgetbridge → + → pick your watch → confirm the code on the watch. If the watch was ever paired to Garmin Connect before, factory-reset it first (Settings → System → Reset).",
+      "s4t": "Sync your data",
+      "s4b": "Pull down in Gadgetbridge to fetch activities and daily data from the watch. Workouts are saved as .FIT files on this phone — open an activity and use its share/export button, or let them collect in Gadgetbridge's export folder.",
+      "s5t": "Import into Fit-ingo",
+      "s5b": "Here on Progress → Import .FIT files, select the exported files. Steps, resting heart rate and workouts appear above. Importing the same file twice is safe.",
+      "s6t": "Optional: notifications & battery",
+      "s6b": "In Android settings, exclude Gadgetbridge from battery optimization so background sync keeps working — same as you did for Termux.",
+      "note": "Everything stays on this phone: watch → Bluetooth → Gadgetbridge → Fit-ingo. No account is created anywhere."
+    }
   },
   "quick": {
     "bonus": "Bonus — anytime, no streak needed",

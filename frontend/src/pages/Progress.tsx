@@ -92,6 +92,7 @@ function HealthSection({ health, onImported }: {
   const fileRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<string | null>(null);
+  const [showGuide, setShowGuide] = useState(false);
 
   const hasData = !!health && (health.daily.length > 0 || health.activities.length > 0);
 
@@ -139,7 +140,12 @@ function HealthSection({ health, onImported }: {
 
       {!hasData ? (
         <p className="muted">{t("health.empty")}</p>
-      ) : (
+      ) : null}
+      <button className="guide-link" onClick={() => setShowGuide(true)}>
+        📖 {t("health.guide.button")}
+      </button>
+      {showGuide && <GarminGuide onClose={() => setShowGuide(false)} />}
+      {hasData && (
         <>
           {steps.length > 0 && (
             <div>
@@ -179,6 +185,33 @@ function HealthSection({ health, onImported }: {
         </>
       )}
     </Card>
+  );
+}
+
+/** Step-by-step Garmin + Gadgetbridge setup — kept in-app so it's on hand
+ * the day the hardware arrives. Cloud-free by design, like everything else. */
+function GarminGuide({ onClose }: { onClose: () => void }) {
+  const { t } = useTranslation();
+  const steps = [1, 2, 3, 4, 5, 6] as const;
+  return (
+    <div className="guide-sheet" onClick={onClose}>
+      <div className="guide-card" onClick={(e) => e.stopPropagation()}>
+        <div className="spread">
+          <h3 className="guide-title">⌚ {t("health.guide.title")}</h3>
+          <button className="wk-close" onClick={onClose} aria-label={t("common.close")}>✕</button>
+        </div>
+        <p className="muted guide-intro">{t("health.guide.intro")}</p>
+        <ol className="guide-steps">
+          {steps.map((n) => (
+            <li key={n}>
+              <strong>{t(`health.guide.s${n}t`)}</strong>
+              <p>{t(`health.guide.s${n}b`)}</p>
+            </li>
+          ))}
+        </ol>
+        <p className="muted guide-note">💡 {t("health.guide.note")}</p>
+      </div>
+    </div>
   );
 }
 

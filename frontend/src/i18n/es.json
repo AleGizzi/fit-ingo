@@ -113,7 +113,25 @@
     "steps": "Pasos diarios",
     "stepsLatest": "Último: {{n}} pasos",
     "restingHr": "Pulso en reposo",
-    "activities": "Actividades recientes"
+    "activities": "Actividades recientes",
+    "guide": {
+      "button": "Guía de configuración Garmin (sin nube)",
+      "title": "Garmin, sin la nube",
+      "intro": "Empareja un reloj Garmin directo a este teléfono por Bluetooth — sin cuenta Garmin y sin que tus datos salgan del dispositivo. El puente es Gadgetbridge: código abierto, sin conexión, sin registro.",
+      "s1t": "Elige un Garmin compatible",
+      "s1b": "Buenas opciones: Forerunner 165 / 255 / 265 / 965, Venu y Venu Sq, Vívoactive, Fénix 6/7/8. La lista completa está en gadgetbridge.org → Gadgets → Garmin.",
+      "s2t": "Instala Gadgetbridge desde F-Droid",
+      "s2b": "Instala la tienda F-Droid (f-droid.org) y desde ella Gadgetbridge. Evita versiones de Google Play y NO instales Garmin Connect — el reloj no debe estar emparejado a la app de Garmin.",
+      "s3t": "Empareja el reloj dentro de Gadgetbridge",
+      "s3b": "Gadgetbridge → + → elige tu reloj → confirma el código en el reloj. Si el reloj estuvo emparejado antes con Garmin Connect, hazle un restablecimiento de fábrica primero (Ajustes → Sistema → Restablecer).",
+      "s4t": "Sincroniza tus datos",
+      "s4b": "Desliza hacia abajo en Gadgetbridge para traer actividades y datos diarios del reloj. Los entrenos se guardan como archivos .FIT en este teléfono — abre una actividad y usa su botón de compartir/exportar, o recógelos de la carpeta de exportación de Gadgetbridge.",
+      "s5t": "Importa en Fit-ingo",
+      "s5b": "Aquí en Progreso → Importar archivos .FIT, selecciona los archivos exportados. Los pasos, el pulso en reposo y los entrenos aparecen arriba. Importar el mismo archivo dos veces es seguro.",
+      "s6t": "Opcional: notificaciones y batería",
+      "s6b": "En los ajustes de Android, excluye Gadgetbridge de la optimización de batería para que la sincronización en segundo plano siga funcionando — igual que hiciste con Termux.",
+      "note": "Todo se queda en este teléfono: reloj → Bluetooth → Gadgetbridge → Fit-ingo. No se crea ninguna cuenta en ningún sitio."
+    }
   },
   "quick": {
     "bonus": "Extra — cuando quieras, sin racha",
