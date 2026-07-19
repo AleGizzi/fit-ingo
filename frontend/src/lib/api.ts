@@ -1,5 +1,6 @@
 import type {
-  DietInfo, Exercise, Metrics, Plan, Profile, Settings, Streak, Today,
+  DietInfo, Exercise, Metrics, Plan, Profile, QuickKind, QuickSession,
+  Settings, Streak, Today,
 } from "./types";
 
 async function j<T>(res: Response): Promise<T> {
@@ -49,6 +50,8 @@ export const api = {
     perceived_difficulty?: number;
     duration_min?: number;
   }) => post("/api/log", body).then(j<{ ok: boolean; streak: Streak }>),
+
+  getQuick: (kind: QuickKind) => fetch(`/api/quick/${kind}`).then(j<QuickSession>),
 
   getStreak: () => fetch("/api/streak").then(j<Streak>),
   getMetrics: () => fetch("/api/metrics").then(j<Metrics>),

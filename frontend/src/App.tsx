@@ -4,6 +4,7 @@ import { TabBar } from "./components/TabBar";
 import { Onboarding } from "./pages/Onboarding";
 import { Today } from "./pages/Today";
 import { Workout } from "./pages/Workout";
+import { QuickSession } from "./pages/QuickSession";
 import { Library } from "./pages/Library";
 import { Progress } from "./pages/Progress";
 import { Diet } from "./pages/Diet";
@@ -30,7 +31,8 @@ function Shell() {
   const showTabs =
     !!profile &&
     location.pathname !== "/onboarding" &&
-    !location.pathname.startsWith("/workout");
+    !location.pathname.startsWith("/workout") &&
+    !location.pathname.startsWith("/quick");
 
   return (
     <div className="app-shell">
@@ -39,6 +41,7 @@ function Shell() {
           <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/today" element={<Today />} />
           <Route path="/workout" element={<Workout />} />
+          <Route path="/quick/:kind" element={<QuickSession />} />
           <Route path="/library" element={<Library />} />
           <Route path="/progress" element={<Progress />} />
           <Route path="/diet" element={<Diet />} />

@@ -21,6 +21,7 @@ from flask import Flask, jsonify, request, send_from_directory
 import db
 import diet as diet_engine
 import planner as planner_engine
+import quick as quick_engine
 from reminders import ReminderScheduler, get_status, send_notification
 from streak import compute_streak
 
@@ -246,6 +247,17 @@ def _last_week_progression() -> float:
     diffs = [r["perceived_difficulty"] for r in rows if r["perceived_difficulty"] is not None]
     avg_diff = sum(diffs) / len(diffs) if diffs else 3.0
     return planner_engine.progression_factor(completion, avg_diff)
+
+
+@app.get("/api/quick/<kind>")
+def get_quick(kind):
+    """A bonus mini-session (quick 10' workout / desk break / wellness flow).
+    Generated fresh each call; nothing is persisted and the streak is not
+    involved — these live besides the weekly goal."""
+    if kind not in quick_engine.KINDS:
+        return jsonify({"error": f"unknown kind: {kind}"}), 404
+    session = quick_engine.build_session(db.all_exercises(), db.get_profile(), kind)
+    return jsonify(session)
 
 
 @app.get("/api/today")

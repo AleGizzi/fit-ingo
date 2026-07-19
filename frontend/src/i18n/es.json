@@ -96,6 +96,16 @@
     "saveError": "No se pudo guardar tu entrenamiento.",
     "retry": "Reintentar"
   },
+  "quick": {
+    "bonus": "Extra — cuando quieras, sin racha",
+    "quickTitle": "Entreno rápido",
+    "quickSub": "~10 min, cuerpo completo",
+    "deskTitle": "Pausa de escritorio",
+    "deskSub": "Suéltate mientras trabajas",
+    "wellnessTitle": "Sesión de bienestar",
+    "wellnessSub": "Estira y relájate",
+    "doneBody": "¡Buen extra — tu cuerpo te lo agradece!"
+  },
   "library": {
     "title": "Biblioteca de ejercicios",
     "search": "Buscar ejercicios…",

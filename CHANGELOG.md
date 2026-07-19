@@ -2,6 +2,14 @@
 
 Versions track the PWA (`frontend/src/lib/version.ts`), shown in Settings ▸ Version.
 
+## 1.2.0
+
+- **Bonus mini-sessions** on the Today page — always available, never touch
+  the streak: ⚡ **Quick workout** (~10 min full body, respects your profile's
+  impact/equipment/limitations), 🪑 **Desk break** (seated/standing moves for
+  a pause while working), 🧘 **Feel-good flow** (gentle stretching & mobility).
+- Enter on the keyboard advances past the name step in onboarding.
+
 ## 1.1.0
 
 - **Fixed intermittent request failures.** Every thread shared one SQLite

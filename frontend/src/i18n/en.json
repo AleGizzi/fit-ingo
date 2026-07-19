@@ -96,6 +96,16 @@
     "saveError": "Couldn't save your workout.",
     "retry": "Try again"
   },
+  "quick": {
+    "bonus": "Bonus — anytime, no streak needed",
+    "quickTitle": "Quick workout",
+    "quickSub": "~10 min, full body",
+    "deskTitle": "Desk break",
+    "deskSub": "Loosen up while working",
+    "wellnessTitle": "Feel-good flow",
+    "wellnessSub": "Gentle stretch & unwind",
+    "doneBody": "Nice bonus — your body thanks you!"
+  },
   "library": {
     "title": "Exercise library",
     "search": "Search exercises…",

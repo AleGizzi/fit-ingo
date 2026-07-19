@@ -121,6 +121,8 @@ export function Onboarding() {
             placeholder={t("onboarding.namePlaceholder")}
             value={p.name}
             onChange={(e) => set({ name: e.target.value })}
+            onKeyDown={(e) => e.key === "Enter" && next()}
+            enterKeyHint="next"
             autoFocus
           />
         </Step>

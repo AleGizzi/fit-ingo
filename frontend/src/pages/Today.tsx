@@ -113,7 +113,29 @@ export function Today() {
           </Button>
         </Card>
       )}
+
+      {/* Bonus mini-sessions: always available, never touch the streak. */}
+      <div className="bonus-block">
+        <span className="eyebrow">{t("quick.bonus")}</span>
+        <div className="bonus-row">
+          <BonusTile icon="⚡" label={t("quick.quickTitle")} sub={t("quick.quickSub")} onClick={() => nav("/quick/quick")} />
+          <BonusTile icon="🪑" label={t("quick.deskTitle")} sub={t("quick.deskSub")} onClick={() => nav("/quick/desk")} />
+          <BonusTile icon="🧘" label={t("quick.wellnessTitle")} sub={t("quick.wellnessSub")} onClick={() => nav("/quick/wellness")} />
+        </div>
+      </div>
     </div>
+  );
+}
+
+function BonusTile({ icon, label, sub, onClick }: {
+  icon: string; label: string; sub: string; onClick: () => void;
+}) {
+  return (
+    <button className="bonus-tile" onClick={onClick}>
+      <span className="bonus-icon">{icon}</span>
+      <span className="bonus-label">{label}</span>
+      <span className="bonus-sub">{sub}</span>
+    </button>
   );
 }
 

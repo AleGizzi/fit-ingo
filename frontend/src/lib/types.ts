@@ -55,6 +55,15 @@ export interface PlanDay {
   items: PlanItem[];
 }
 
+export type QuickKind = "quick" | "desk" | "wellness";
+
+/** A bonus mini-session — generated on demand, never logged, no streak. */
+export interface QuickSession {
+  kind: QuickKind;
+  minutes: number;
+  items: PlanItem[];
+}
+
 export interface Plan {
   id: number;
   week: number;
