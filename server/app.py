@@ -302,7 +302,7 @@ def log_workout():
     d = body.get("date") or _today_iso()
     conn = db.get_conn()
     pid = active_plan_id(conn)
-    items_done = body.get("items_done") or []
+    items_done = db.normalize_item_keys(body.get("items_done") or [])
     payload = (
         d, pid, int(bool(body.get("completed"))), json.dumps(items_done),
         body.get("items_total"), body.get("perceived_difficulty"),

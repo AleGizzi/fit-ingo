@@ -20,7 +20,7 @@ HERE = Path(__file__).resolve().parent
 SEED_DIR = HERE / "seed"
 
 DEFAULT_DB = HERE / "data" / "fitingo.db"
-SCHEMA_VERSION = 2
+SCHEMA_VERSION = 3
 
 # One connection *per thread*. Flask serves threaded and the reminder thread
 # touches the DB too; sharing a single connection across them interleaves
@@ -137,6 +137,8 @@ def _init_schema(conn: sqlite3.Connection) -> None:
                 items_total INTEGER,
                 perceived_difficulty REAL,  -- 1..5 avg
                 duration_min INTEGER,
+                avg_hr INTEGER,             -- from live BLE HR, if worn
+                max_hr INTEGER,
                 UNIQUE(date)
             );
 
@@ -159,7 +161,18 @@ def _init_schema(conn: sqlite3.Connection) -> None:
                 water_reminder_enabled INTEGER DEFAULT 0,
                 water_interval_min INTEGER DEFAULT 120,
                 water_start TEXT DEFAULT '09:00',
-                water_end TEXT DEFAULT '21:00'
+                water_end TEXT DEFAULT '21:00',
+                weekly_recap_enabled INTEGER DEFAULT 1,
+                excluded_exercises TEXT DEFAULT '[]'  -- JSON array of ids
+            );
+
+            -- Streak-freeze bank (earned by full weeks, spent on misses).
+            -- Activity state, not preference: wiped with clear_activity().
+            CREATE TABLE IF NOT EXISTS streak_state (
+                id INTEGER PRIMARY KEY CHECK (id = 1),
+                freezes INTEGER NOT NULL DEFAULT 0,
+                frozen_dates TEXT NOT NULL DEFAULT '[]',  -- JSON [YYYY-MM-DD]
+                last_earned_week TEXT                     -- ISO 'YYYY-Www'
             );
 
             -- One row per date; ml accumulates through the day.
@@ -204,6 +217,7 @@ def _init_schema(conn: sqlite3.Connection) -> None:
         else:
             _migrate(conn, int(row["value"]))
         conn.execute("INSERT OR IGNORE INTO settings(id) VALUES (1)")
+        conn.execute("INSERT OR IGNORE INTO streak_state(id) VALUES (1)")
         conn.commit()
         _seed_exercises(conn)
 
@@ -224,6 +238,20 @@ def _migrate(conn: sqlite3.Connection, from_version: int) -> None:
         ]:
             if col not in have:
                 conn.execute(f"ALTER TABLE settings ADD COLUMN {col} {ddl}")
+    if from_version < 3:
+        # v3: streak freezes, BLE heart rate, recap toggle, exclusions.
+        # streak_state itself is covered by CREATE TABLE IF NOT EXISTS above.
+        have = {r["name"] for r in conn.execute("PRAGMA table_info(settings)")}
+        for col, ddl in [
+            ("weekly_recap_enabled", "INTEGER DEFAULT 1"),
+            ("excluded_exercises", "TEXT DEFAULT '[]'"),
+        ]:
+            if col not in have:
+                conn.execute(f"ALTER TABLE settings ADD COLUMN {col} {ddl}")
+        have = {r["name"] for r in conn.execute("PRAGMA table_info(workout_log)")}
+        for col in ("avg_hr", "max_hr"):
+            if col not in have:
+                conn.execute(f"ALTER TABLE workout_log ADD COLUMN {col} INTEGER")
     if from_version != SCHEMA_VERSION:
         conn.execute(
             "UPDATE meta SET value=? WHERE key='schema_version'",
@@ -307,7 +335,64 @@ def get_settings() -> dict:
     d["reminder_enabled"] = bool(d["reminder_enabled"])
     d["nag_enabled"] = bool(d["nag_enabled"])
     d["water_reminder_enabled"] = bool(d["water_reminder_enabled"])
+    d["weekly_recap_enabled"] = bool(d["weekly_recap_enabled"])
+    d["excluded_exercises"] = json.loads(d.get("excluded_exercises") or "[]")
     return d
+
+
+def get_streak_state() -> dict:
+    conn = get_conn()
+    row = conn.execute("SELECT * FROM streak_state WHERE id=1").fetchone()
+    if row is None:
+        with _lock:
+            conn.execute("INSERT OR IGNORE INTO streak_state(id) VALUES (1)")
+            conn.commit()
+        row = conn.execute("SELECT * FROM streak_state WHERE id=1").fetchone()
+    return {
+        "freezes": row["freezes"],
+        "frozen_dates": json.loads(row["frozen_dates"] or "[]"),
+        "last_earned_week": row["last_earned_week"],
+    }
+
+
+def save_streak_state(freezes: int, frozen_dates: list[str],
+                      last_earned_week: str | None) -> None:
+    conn = get_conn()
+    with _lock:
+        conn.execute(
+            "UPDATE streak_state SET freezes=?, frozen_dates=?, last_earned_week=? WHERE id=1",
+            (max(0, freezes), json.dumps(sorted(set(frozen_dates))), last_earned_week),
+        )
+        conn.commit()
+
+
+def get_excluded_exercises() -> list[str]:
+    return get_settings()["excluded_exercises"]
+
+
+def set_excluded_exercises(ids: list[str]) -> None:
+    conn = get_conn()
+    with _lock:
+        conn.execute(
+            "UPDATE settings SET excluded_exercises=? WHERE id=1",
+            (json.dumps(sorted(set(ids))),),
+        )
+        conn.commit()
+
+
+def normalize_item_keys(items_done: list[str]) -> list[str]:
+    """Log format v2: every entry is 'exercise_id:block:position'.
+
+    Legacy bare ids (pre-v1.1 logs, or clients not yet updated) become
+    'id:main:<index>' so history rendering has one format to deal with.
+    """
+    out = []
+    for i, key in enumerate(items_done):
+        if isinstance(key, str) and key.count(":") == 2:
+            out.append(key)
+        else:
+            out.append(f"{key}:main:{i}")
+    return out
 
 
 def get_water(day: str) -> int:
@@ -397,6 +482,10 @@ def clear_activity() -> None:
         conn.execute("DELETE FROM workout_log")
         conn.execute("DELETE FROM weight_log")
         conn.execute("DELETE FROM water_log")
+        # Freezes are earned by activity, so they reset with it. Exercise
+        # exclusions survive: a disliked exercise stays disliked.
+        conn.execute("UPDATE streak_state SET freezes=0, frozen_dates='[]', "
+                     "last_earned_week=NULL WHERE id=1")
         conn.commit()
 
 
@@ -416,4 +505,6 @@ def reset_all() -> None:
         conn.execute("DELETE FROM activities")
         conn.execute("DELETE FROM settings")
         conn.execute("INSERT OR IGNORE INTO settings(id) VALUES (1)")
+        conn.execute("DELETE FROM streak_state")
+        conn.execute("INSERT OR IGNORE INTO streak_state(id) VALUES (1)")
         conn.commit()
