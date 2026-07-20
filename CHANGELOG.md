@@ -2,6 +2,26 @@
 
 Versions track the PWA (`frontend/src/lib/version.ts`), shown in Settings ▸ Version.
 
+## 1.5.0
+
+- **Swap an exercise you don't like** — ⇄ on any exercise (list or guided)
+  offers a similar alternative, optionally banning it from future plans.
+  Excluded exercises are listed in the Library with one-tap restore.
+- **Adaptive difficulty** — rate workouts "very hard" a few times and the
+  next plan eases off; rate them "very easy" while finishing them and it
+  steps up. Your level stays a hard ceiling.
+- **Backup & restore** — download your whole database from Settings and
+  restore it later. Backups are validated before anything is replaced, and
+  the app writes an automatic nightly snapshot (last 7 kept in
+  `data/backups/`).
+- **Weekly recap notification** on Sunday evenings: workouts done vs
+  planned, water drunk, current streak.
+- **"+250 ml" button right on water reminders** — log a drink from the
+  notification shade without opening the app.
+- **Reminder-engine status** in Settings, so a silently killed Termux
+  process is visible instead of just meaning no notifications.
+- Fixed: the weekly-recap setting didn't save.
+
 ## 1.4.0
 
 - **Guided workout mode** (new default; List view still one tap away) — one
