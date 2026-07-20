@@ -57,7 +57,8 @@ export function Today() {
   const done = !!today.log?.completed;
   const items = day?.items ?? [];
   const est = estimateMinutes(items);
-  const weekStates = buildWeekStates(plan, metrics, done);
+  const weekStates = buildWeekStates(plan, metrics, done, streak.frozen_dates);
+  const frozenThisWeek = latestThisWeek(streak.frozen_dates);
 
   const greeting = profile?.name ? `${hello(i18n.language)}, ${profile.name}` : hello(i18n.language);
 
@@ -76,8 +77,19 @@ export function Today() {
           <div className="streak-count num">{streak.current}</div>
           <div className="streak-label">{t("today.streak")}</div>
           <div className="streak-best">{t("today.streakBest", { n: streak.best })}</div>
+          {streak.freezes > 0 && (
+            <div className="streak-freezes" title={t("streak.freezes")}>
+              🧊 ×{streak.freezes}
+            </div>
+          )}
         </div>
       </Card>
+
+      {frozenThisWeek && (
+        <div className="freeze-banner">
+          🧊 {t("streak.frozenBanner", { date: frozenThisWeek })}
+        </div>
+      )}
 
       <div className="week-block">
         <span className="eyebrow">{t("today.week")}</span>
@@ -195,29 +207,53 @@ function focusLabel(focus: string) {
     .join(" · ");
 }
 
+function thisMonday(): Date {
+  const now = new Date();
+  const monday = new Date(now);
+  monday.setDate(now.getDate() - ((now.getDay() + 6) % 7));
+  monday.setHours(0, 0, 0, 0);
+  return monday;
+}
+
+/** Most recent frozen date falling inside the current week, or null. */
+function latestThisWeek(frozenDates: string[] | undefined): string | null {
+  if (!frozenDates?.length) return null;
+  const monday = thisMonday();
+  const inWeek = frozenDates.filter((d) => new Date(d + "T00:00:00") >= monday);
+  return inWeek.length ? inWeek[inWeek.length - 1] : null;
+}
+
 /** Build the 7-day (Mon..Sun) week strip from plan schedule + this week's logs. */
-function buildWeekStates(plan: Plan | null, metrics: Metrics | null, todayDone: boolean): DayState[] {
+function buildWeekStates(
+  plan: Plan | null,
+  metrics: Metrics | null,
+  todayDone: boolean,
+  frozenDates: string[] = [],
+): DayState[] {
   const twd = todayWeekday();
   const training = new Set(
     (plan?.days ?? []).filter((d) => !d.is_rest).map((d) => d.weekday),
   );
-  // Map this week's completed dates to weekday index.
+  // Map this week's completed/frozen dates to weekday index.
   const doneWeekdays = new Set<number>();
+  const frozenWeekdays = new Set<number>();
+  const monday = thisMonday();
   if (metrics) {
-    const now = new Date();
-    const monday = new Date(now);
-    monday.setDate(now.getDate() - ((now.getDay() + 6) % 7));
-    monday.setHours(0, 0, 0, 0);
     for (const log of metrics.logs) {
       if (!log.completed) continue;
       const d = new Date(log.date + "T00:00:00");
       if (d >= monday) doneWeekdays.add((d.getDay() + 6) % 7);
     }
   }
+  for (const f of frozenDates) {
+    const d = new Date(f + "T00:00:00");
+    if (d >= monday) frozenWeekdays.add((d.getDay() + 6) % 7);
+  }
   if (todayDone) doneWeekdays.add(twd);
 
   return Array.from({ length: 7 }, (_, wd): DayState => {
     if (doneWeekdays.has(wd)) return "done";
+    if (frozenWeekdays.has(wd)) return "frozen";
     if (wd === twd) return "today";
     if (!training.has(wd)) return "rest";
     if (wd < twd) return "missed";

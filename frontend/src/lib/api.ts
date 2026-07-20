@@ -49,7 +49,9 @@ export const api = {
     items_total: number;
     perceived_difficulty?: number;
     duration_min?: number;
-  }) => post("/api/log", body).then(j<{ ok: boolean; streak: Streak }>),
+  }) => post("/api/log", body).then(
+    j<{ ok: boolean; streak: Streak; freeze_earned: boolean }>,
+  ),
 
   getQuick: (kind: QuickKind) => fetch(`/api/quick/${kind}`).then(j<QuickSession>),
 

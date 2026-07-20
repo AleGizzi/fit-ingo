@@ -96,6 +96,11 @@
     "saveError": "Couldn't save your workout.",
     "retry": "Try again"
   },
+  "streak": {
+    "freezes": "Streak freezes",
+    "frozenBanner": "A freeze saved your streak on {{date}}",
+    "earned": "Full week! +1 streak freeze"
+  },
   "water": {
     "title": "Water today",
     "goalReached": "Goal reached!",

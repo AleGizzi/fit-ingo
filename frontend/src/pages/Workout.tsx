@@ -18,6 +18,7 @@ export function Workout() {
   const [doneIds, setDoneIds] = useState<Set<string>>(new Set());
   const [showRating, setShowRating] = useState(false);
   const [savedStreak, setSavedStreak] = useState<Streak | null>(null);
+  const [freezeEarned, setFreezeEarned] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   // Set once the user changes something, so autosave doesn't re-post on load.
@@ -85,8 +86,10 @@ export function Workout() {
         duration_min: undefined,
       });
       setSavedStreak(res.streak);
-      // Brief celebration, then back to Today.
-      setTimeout(() => nav("/today", { replace: true }), completed ? 1400 : 300);
+      setFreezeEarned(res.freeze_earned);
+      // Brief celebration, then back to Today (longer when a freeze drops).
+      setTimeout(() => nav("/today", { replace: true }),
+        completed ? (res.freeze_earned ? 2200 : 1400) : 300);
     } catch (e) {
       // Surface the failure instead of silently doing nothing.
       setSaveError(e instanceof Error ? e.message : String(e));
@@ -193,6 +196,9 @@ export function Workout() {
           <div className="celebrate-flame">🔥</div>
           <div className="celebrate-num num">{savedStreak.current}</div>
           <div className="celebrate-lbl">{t("today.streak")}</div>
+          {freezeEarned && (
+            <div className="celebrate-freeze">🧊 {t("streak.earned")}</div>
+          )}
         </div>
       )}
     </div>

@@ -218,3 +218,26 @@
   opacity: 0.4;
   cursor: default;
 }
+
+/* Streak freezes */
+.streak-freezes {
+  margin-top: 4px;
+  font-weight: 800;
+  font-size: 13px;
+  color: #2563eb;
+}
+:root[data-theme="dark"] .streak-freezes {
+  color: #7cc4fa;
+}
+.freeze-banner {
+  background: #dbeefe;
+  color: #1d4ed8;
+  font-weight: 800;
+  font-size: 14px;
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+}
+:root[data-theme="dark"] .freeze-banner {
+  background: #12314f;
+  color: #7cc4fa;
+}

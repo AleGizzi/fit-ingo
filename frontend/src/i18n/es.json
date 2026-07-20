@@ -96,6 +96,11 @@
     "saveError": "No se pudo guardar tu entrenamiento.",
     "retry": "Reintentar"
   },
+  "streak": {
+    "freezes": "Protectores de racha",
+    "frozenBanner": "Un protector salvó tu racha el {{date}}",
+    "earned": "¡Semana completa! +1 protector de racha"
+  },
   "water": {
     "title": "Agua de hoy",
     "goalReached": "¡Meta cumplida!",

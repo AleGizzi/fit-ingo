@@ -1,7 +1,7 @@
 import { weekdayShort } from "../lib/format";
 import "./weekring.css";
 
-type DayState = "done" | "today" | "rest" | "missed" | "future";
+type DayState = "done" | "today" | "rest" | "missed" | "future" | "frozen";
 
 /** A 7-dot week strip. Filled dots = completed training days. */
 export function WeekRing({
@@ -17,7 +17,7 @@ export function WeekRing({
       {states.map((s, i) => (
         <div className="weekring-col" key={i}>
           <div className={`weekring-dot wr-${s}`}>
-            {s === "done" ? "✓" : s === "rest" ? "·" : ""}
+            {s === "done" ? "✓" : s === "frozen" ? "❄" : s === "rest" ? "·" : ""}
           </div>
           <span className="weekring-lbl">{labels[i]}</span>
         </div>

@@ -46,3 +46,13 @@
   font-weight: 800;
   color: var(--ink-3);
 }
+.wr-frozen {
+  background: #dbeefe;
+  color: #2563eb;
+  border-color: #7cc4fa;
+}
+:root[data-theme="dark"] .wr-frozen {
+  background: #12314f;
+  color: #7cc4fa;
+  border-color: #2563eb;
+}

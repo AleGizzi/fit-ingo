@@ -273,3 +273,11 @@
   from { transform: translateY(100%); }
   to { transform: translateY(0); }
 }
+
+.celebrate-freeze {
+  margin-top: 14px;
+  font-weight: 800;
+  font-size: 15px;
+  color: #7cc4fa;
+  animation: pop 0.9s ease-in-out infinite;
+}

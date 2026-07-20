@@ -122,6 +122,10 @@ export interface Streak {
   current: number;
   best: number;
   at_risk: boolean;
+  /** Banked streak freezes (0–2), earned by completing full weeks. */
+  freezes: number;
+  /** Dates a consumed freeze covered (continuity, shown as ❄ not ✓). */
+  frozen_dates: string[];
 }
 
 export interface Settings {

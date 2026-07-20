@@ -24,7 +24,7 @@ import planner as planner_engine
 import health as health_engine
 import quick as quick_engine
 from reminders import ReminderScheduler, get_status, send_notification
-from streak import compute_streak
+from streak import compute_streak, consume_freezes, week_complete
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
 log = logging.getLogger("fitingo")
@@ -323,11 +323,44 @@ def log_workout():
             payload,
         )
         conn.commit()
-    return jsonify({"ok": True, "streak": _streak()})
+
+    earned = bool(body.get("completed")) and _maybe_earn_freeze()
+    return jsonify({"ok": True, "streak": _streak(), "freeze_earned": earned})
 
 
 def _streak() -> dict:
-    return compute_streak(completed_dates(), training_weekdays())
+    """Streak with lazy freeze consumption: any missed-day gap that banked
+    freezes can bridge is frozen (persisted) the first time anyone looks."""
+    state = db.get_streak_state()
+    done = completed_dates()
+    tw = training_weekdays()
+    freezes, frozen, changed = consume_freezes(
+        done, tw, state["freezes"], state["frozen_dates"])
+    if changed:
+        db.save_streak_state(freezes, frozen, state["last_earned_week"])
+    s = compute_streak(done, tw, frozen_dates=frozen)
+    s["freezes"] = freezes
+    s["frozen_dates"] = frozen
+    return s
+
+
+def _iso_week(d: date) -> str:
+    y, w, _ = d.isocalendar()
+    return f"{y}-W{w:02d}"
+
+
+def _maybe_earn_freeze() -> bool:
+    """+1 freeze (cap 2) when this ISO week's schedule is fully covered.
+    At most one earn per week. Called after a completed workout is saved."""
+    state = db.get_streak_state()
+    week = _iso_week(date.today())
+    if state["last_earned_week"] == week or state["freezes"] >= 2:
+        return False
+    if not week_complete(completed_dates(), training_weekdays(),
+                         state["frozen_dates"]):
+        return False
+    db.save_streak_state(state["freezes"] + 1, state["frozen_dates"], week)
+    return True
 
 
 @app.get("/api/streak")
