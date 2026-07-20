@@ -2,6 +2,25 @@
 
 Versions track the PWA (`frontend/src/lib/version.ts`), shown in Settings ▸ Version.
 
+## 1.4.0
+
+- **Guided workout mode** (new default; List view still one tap away) — one
+  exercise at a time with real timers: countdowns for timed moves with
+  pause/resume, per-set Done for rep moves, skippable rest timers between
+  sets, auto-advance, and vibration cues on set/rest/finish. Progress syncs
+  with List view and survives reloads.
+- **Streak freezes** 🧊 — complete every scheduled day of a week to bank a
+  freeze (max 2). A missed day gets bridged automatically: shown as ice,
+  never faked as done. Freezes only spend themselves when they can actually
+  save the streak.
+- **Visible progress** — lifetime reps / minutes / active weeks, a
+  "Volume ×" chip showing your plan's progression, and a tappable workout
+  history with exercise-level detail.
+- **Rest days suggest the feel-good flow** — optional, streak-neutral.
+- Haptic feedback on checkmarks, water-goal, and workout completion.
+- Groundwork: schema v3 (migrates in place), heart-rate columns for the
+  upcoming live-HR feature, normalized history log format.
+
 ## 1.3.0
 
 - **Water tracking** — a 💧 card on Today (+250 / +500 ml, undo, progress bar
