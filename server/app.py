@@ -130,9 +130,35 @@ def _plan_to_json(plan_id: int) -> dict:
     }
 
 
+def _catalog() -> list[dict]:
+    """The exercise pool the planner may draw from: full catalog minus the
+    user's excluded exercises. The Library/API still exposes everything."""
+    excluded = set(db.get_excluded_exercises())
+    return [e for e in db.all_exercises() if e["id"] not in excluded]
+
+
+def _adaptive_delta() -> tuple[int, float | None]:
+    """(ceiling_delta, avg_perceived) from the last 6 rated workouts (P5).
+    Consistently 'very hard' lowers the difficulty ceiling one notch;
+    consistently 'very easy' with high completion raises it (level-capped)."""
+    conn = db.get_conn()
+    rows = conn.execute(
+        "SELECT completed, perceived_difficulty FROM workout_log "
+        "WHERE perceived_difficulty IS NOT NULL ORDER BY date DESC LIMIT 6"
+    ).fetchall()
+    if not rows:
+        return 0, None
+    avg = sum(r["perceived_difficulty"] for r in rows) / len(rows)
+    completion = sum(1 for r in rows if r["completed"]) / len(rows)
+    if avg >= 4.3:
+        return -1, round(avg, 2)
+    if avg <= 1.7 and completion >= 0.8:
+        return 1, round(avg, 2)
+    return 0, round(avg, 2)
+
+
 def _regenerate_for_profile(profile: dict, week: int = 1) -> int:
-    exercises = db.all_exercises()
-    days = planner_engine.generate_plan(exercises, profile, seed=None)
+    days = planner_engine.generate_plan(_catalog(), profile, seed=None)
     return _save_plan(days, profile, week=week)
 
 
@@ -221,6 +247,57 @@ def get_plan():
     return jsonify(_plan_to_json(pid))
 
 
+@app.post("/api/plan/swap")
+def swap_plan_item():
+    """Replace one plan item's exercise with an eligible alternative.
+
+    Body: {"plan_item_id": int, "exclude": bool}. The slot's dose
+    (sets/reps/duration/rest) is kept — it was sized for the slot, not the
+    exercise. With exclude=true the old exercise is also banned from future
+    plans and quick sessions.
+    """
+    body = request.get_json(force=True) or {}
+    item_id = body.get("plan_item_id")
+    profile = db.get_profile()
+    if not profile:
+        return jsonify({"error": "no profile"}), 400
+    conn = db.get_conn()
+    item = conn.execute("SELECT * FROM plan_items WHERE id=?", (item_id,)).fetchone()
+    if not item:
+        return jsonify({"error": "unknown plan item"}), 404
+
+    day_ids = {r["exercise_id"] for r in conn.execute(
+        "SELECT exercise_id FROM plan_items WHERE plan_day_id=?",
+        (item["plan_day_id"],)).fetchall()}
+    old = next((e for e in db.all_exercises() if e["id"] == item["exercise_id"]), None)
+    pool = [e for e in planner_engine.eligible_exercises(_catalog(), profile)
+            if e["id"] not in day_ids]
+
+    def pick(candidates):
+        import random as _r
+        return _r.choice(candidates) if candidates else None
+
+    chosen = None
+    if old:
+        same_type = [e for e in pool if e["type"] == old["type"]]
+        overlap = [e for e in same_type
+                   if set(e["muscle_groups"]) & set(old["muscle_groups"])]
+        chosen = pick(overlap) or pick(same_type)
+    chosen = chosen or pick(pool)
+    if not chosen:
+        return jsonify({"error": "no alternative available"}), 409
+
+    with db._lock:
+        conn.execute("UPDATE plan_items SET exercise_id=? WHERE id=?",
+                     (chosen["id"], item_id))
+        conn.commit()
+    if body.get("exclude") and old:
+        db.set_excluded_exercises(db.get_excluded_exercises() + [old["id"]])
+
+    updated = conn.execute("SELECT * FROM plan_items WHERE id=?", (item_id,)).fetchone()
+    return jsonify(dict(updated))
+
+
 @app.post("/api/plan/regenerate")
 def regenerate_plan():
     profile = db.get_profile()
@@ -228,14 +305,16 @@ def regenerate_plan():
         return jsonify({"error": "no profile"}), 400
     # Weekly progression: look at last week's completion to scale the new plan.
     factor = _last_week_progression()
-    exercises = db.all_exercises()
-    days = planner_engine.generate_plan(exercises, profile)
+    delta, avg_perceived = _adaptive_delta()
+    days = planner_engine.generate_plan(_catalog(), profile, ceiling_delta=delta)
     days = planner_engine.apply_progression(days, factor)
     conn = db.get_conn()
     prev = conn.execute("SELECT week FROM plan WHERE active=1").fetchone()
     week = (prev["week"] + 1) if prev else 1
-    pid = _save_plan(days, profile, week=week,
-                     extra_meta={"progression_factor": round(factor, 2)})
+    meta = {"progression_factor": round(factor, 2)}
+    if delta or avg_perceived is not None:
+        meta["adaptive"] = {"avg_perceived": avg_perceived, "ceiling_delta": delta}
+    pid = _save_plan(days, profile, week=week, extra_meta=meta)
     return jsonify({"plan": _plan_to_json(pid), "progression_factor": factor})
 
 
@@ -261,7 +340,7 @@ def get_quick(kind):
     involved — these live besides the weekly goal."""
     if kind not in quick_engine.KINDS:
         return jsonify({"error": f"unknown kind: {kind}"}), 404
-    session = quick_engine.build_session(db.all_exercises(), db.get_profile(), kind)
+    session = quick_engine.build_session(_catalog(), db.get_profile(), kind)
     return jsonify(session)
 
 
@@ -600,14 +679,16 @@ def save_settings():
     water_int = int(body.get("water_interval_min", cur["water_interval_min"]))
     water_start = body.get("water_start", cur["water_start"])
     water_end = body.get("water_end", cur["water_end"])
+    excluded = json.dumps(sorted(set(
+        body.get("excluded_exercises", cur["excluded_exercises"]))))
     with db._lock:
         conn.execute(
             """UPDATE settings SET language=?, theme=?, reminder_enabled=?,
                reminder_times=?, nag_enabled=?, nag_time=?,
                water_goal_ml=?, water_reminder_enabled=?, water_interval_min=?,
-               water_start=?, water_end=? WHERE id=1""",
+               water_start=?, water_end=?, excluded_exercises=? WHERE id=1""",
             (lang, theme, rem_en, rem_times, nag_en, nag_time,
-             water_goal, water_en, water_int, water_start, water_end),
+             water_goal, water_en, water_int, water_start, water_end, excluded),
         )
         conn.commit()
     return jsonify(db.get_settings())

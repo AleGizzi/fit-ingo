@@ -102,7 +102,11 @@
     "rest": "Descanso",
     "skipRest": "Saltar descanso",
     "pause": "Pausa",
-    "resumeTimer": "Continuar"
+    "resumeTimer": "Continuar",
+    "swapOpen": "Cambiar ejercicio",
+    "swap": "Cambiar por algo similar",
+    "swapExclude": "Cambiar y no sugerir más",
+    "swapNone": "No hay alternativa disponible"
   },
   "streak": {
     "freezes": "Protectores de racha",
@@ -160,6 +164,8 @@
     "title": "Biblioteca de ejercicios",
     "search": "Buscar ejercicios…",
     "empty": "Ningún ejercicio coincide con tus filtros.",
+    "excluded": "Excluido",
+    "restore": "Restaurar",
     "type": {
       "all": "Todos", "strength": "Fuerza", "cardio": "Cardio",
       "mobility": "Movilidad", "stretch": "Estiramiento", "balance": "Equilibrio"

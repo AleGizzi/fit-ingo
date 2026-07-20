@@ -17,6 +17,7 @@ export function GuidedFlow({
   keyOf,
   onCompleteItem,
   onAllDone,
+  onSwap,
 }: {
   items: PlanItem[];
   exercises: Record<string, Exercise>;
@@ -24,6 +25,7 @@ export function GuidedFlow({
   keyOf: (it: PlanItem) => string;
   onCompleteItem: (key: string) => void;
   onAllDone: () => void;
+  onSwap: (it: PlanItem) => void;
 }) {
   const { t, i18n } = useTranslation();
   const firstOpen = items.findIndex((it) => !doneKeys.has(keyOf(it)));
@@ -87,7 +89,11 @@ export function GuidedFlow({
   return (
     <div className="gf">
       <span className="eyebrow">{t(`workout.${item.block}`)}</span>
-      <h2 className="gf-name">{exName(ex, i18n.language)}</h2>
+      <div className="gf-namerow">
+        <h2 className="gf-name">{exName(ex, i18n.language)}</h2>
+        <button className="gf-swap" onClick={() => onSwap(item)}
+          aria-label={t("workout.swapOpen")}>⇄</button>
+      </div>
       {/* P9: hr chip mounts here */}
       {sets > 1 && (
         <div className="gf-sets num">

@@ -79,24 +79,29 @@ class PlanDay:
         }
 
 
-def _difficulty_ceiling(profile: dict) -> int:
-    ceiling = LEVEL_MAX_DIFFICULTY.get(profile.get("level", "beginner"), 2)
+def _difficulty_ceiling(profile: dict, delta: int = 0) -> int:
+    """Level/age ceiling, optionally nudged by adaptive difficulty (P5).
+    The level cap stays a cap: the delta can lower it or restore it, never
+    push past what the level allows; floor is 1 so the pool never empties."""
+    cap = LEVEL_MAX_DIFFICULTY.get(profile.get("level", "beginner"), 2)
+    ceiling = cap
     if (profile.get("age") or 0) >= 55:
         ceiling = max(1, ceiling - 1)
-    return ceiling
+    return max(1, min(cap, ceiling + delta))
 
 
-def eligible_exercises(exercises: list[dict], profile: dict) -> list[dict]:
+def eligible_exercises(exercises: list[dict], profile: dict,
+                       ceiling_delta: int = 0) -> list[dict]:
     """Filter the catalog by the user's constraints.
 
     - impact must be <= the user's tolerance
     - equipment must be available (bodyweight always allowed)
-    - difficulty <= ceiling from level/age
+    - difficulty <= ceiling from level/age (+- adaptive delta)
     - drop anything contraindicated by the user's limitations
     """
     tol = IMPACT_RANK.get(profile.get("impact", "low"), 1)
     owned = _owned_equipment(profile.get("equipment", "none"))
-    ceiling = _difficulty_ceiling(profile)
+    ceiling = _difficulty_ceiling(profile, ceiling_delta)
     limits = set(profile.get("limitations") or [])
 
     out = []
@@ -181,10 +186,11 @@ def _training_weekdays(days_per_week: int) -> list[int]:
     return DAY_SPREAD[d]
 
 
-def generate_plan(exercises: list[dict], profile: dict, seed: int | None = None) -> list[PlanDay]:
+def generate_plan(exercises: list[dict], profile: dict, seed: int | None = None,
+                  ceiling_delta: int = 0) -> list[PlanDay]:
     """Build a full week (7 PlanDay objects, Mon..Sun)."""
     rng = random.Random(seed)
-    pool = eligible_exercises(exercises, profile)
+    pool = eligible_exercises(exercises, profile, ceiling_delta)
 
     by_type: dict[str, list[dict]] = {}
     for e in pool:

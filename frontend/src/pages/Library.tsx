@@ -13,7 +13,18 @@ const TYPES: TypeFilter[] = ["all", "strength", "cardio", "mobility", "stretch",
 
 export function Library() {
   const { t, i18n } = useTranslation();
-  const { reload } = useApp();
+  const { reload, settings, setSettings } = useApp();
+  const excluded = new Set(settings?.excluded_exercises ?? []);
+
+  async function restore(id: string) {
+    if (!settings) return;
+    const merged = {
+      ...settings,
+      excluded_exercises: settings.excluded_exercises.filter((x) => x !== id),
+    };
+    setSettings(merged);
+    setSettings(await api.saveSettings(merged));
+  }
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [typeFilter, setTypeFilter] = useState<TypeFilter>("all");
   const [query, setQuery] = useState("");
@@ -97,6 +108,11 @@ export function Library() {
                 <span className="lib-tag">{t(`library.type.${ex.type}`)}</span>
                 {ex.impact && <span className="lib-tag">{ex.impact}</span>}
                 {ex.equipment && <span className="lib-tag">{ex.equipment}</span>}
+                {excluded.has(ex.id) && (
+                  <button className="lib-tag lib-tag-excluded" onClick={() => restore(ex.id)}>
+                    {t("library.excluded")} · {t("library.restore")}
+                  </button>
+                )}
               </div>
             </div>
             <p className="lib-instructions">{exInstructions(ex, i18n.language)}</p>

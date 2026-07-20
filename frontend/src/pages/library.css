@@ -92,3 +92,14 @@
   opacity: 0.6;
   cursor: default;
 }
+
+.lib-tag-excluded {
+  border: none;
+  cursor: pointer;
+  background: rgba(226, 62, 0, 0.12);
+  color: var(--ember-deep);
+  font-weight: 800;
+}
+:root[data-theme="dark"] .lib-tag-excluded {
+  color: #ff7a5c;
+}

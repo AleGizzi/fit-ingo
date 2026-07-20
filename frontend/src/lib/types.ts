@@ -140,6 +140,8 @@ export interface Settings {
   water_interval_min: number;
   water_start: string;
   water_end: string;
+  weekly_recap_enabled: boolean;
+  excluded_exercises: string[];
 }
 
 export interface DietInfo {

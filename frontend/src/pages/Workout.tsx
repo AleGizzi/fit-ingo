@@ -24,6 +24,9 @@ export function Workout() {
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [view, setView] = useState<"guided" | "list">("guided");
+  const [swapItem, setSwapItem] = useState<PlanItem | null>(null);
+  const [swapBusy, setSwapBusy] = useState(false);
+  const [swapError, setSwapError] = useState<string | null>(null);
   // Set once the user changes something, so autosave doesn't re-post on load.
   const dirtyRef = useRef(false);
 
@@ -83,6 +86,30 @@ export function Workout() {
   function completeKey(key: string) {
     dirtyRef.current = true;
     setDoneIds((prev) => new Set(prev).add(key));
+  }
+
+  async function doSwap(exclude: boolean) {
+    if (!swapItem) return;
+    setSwapBusy(true);
+    setSwapError(null);
+    try {
+      const updated = await api.swapItem(swapItem.id, exclude);
+      setToday((prev) => {
+        if (!prev?.day) return prev;
+        return {
+          ...prev,
+          day: {
+            ...prev.day,
+            items: prev.day.items.map((it) => (it.id === updated.id ? updated : it)),
+          },
+        };
+      });
+      setSwapItem(null);
+    } catch (e) {
+      setSwapError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setSwapBusy(false);
+    }
   }
 
   async function finish(perceived?: number) {
@@ -150,6 +177,7 @@ export function Workout() {
           keyOf={itemKey}
           onCompleteItem={completeKey}
           onAllDone={() => setShowRating(true)}
+          onSwap={setSwapItem}
         />
       )}
 
@@ -168,6 +196,15 @@ export function Workout() {
                       <h3 className="ex-name">{exName(ex, i18n.language)}</h3>
                       <span className="ex-dose num">{itemDose(it)}</span>
                     </div>
+                    {!isReviewing && !isDone && (
+                      <button
+                        className="ex-swap"
+                        onClick={() => setSwapItem(it)}
+                        aria-label={t("workout.swapOpen")}
+                      >
+                        ⇄
+                      </button>
+                    )}
                     <button
                       className={`ex-check ${isDone ? "ex-check-on" : ""}`}
                       onClick={() => toggle(it)}
@@ -227,6 +264,34 @@ export function Workout() {
             )}
             <button className="rating-skip" disabled={saving} onClick={() => finish(undefined)}>
               {saving ? t("common.loading") : saveError ? t("workout.retry") : t("common.skip")}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {swapItem && (
+        <div className="rating-sheet" onClick={() => !swapBusy && setSwapItem(null)}>
+          <div className="rating-card" onClick={(e) => e.stopPropagation()}>
+            <h3 className="rating-title">
+              ⇄ {exName(exercises[swapItem.exercise_id], i18n.language)}
+            </h3>
+            <div className="swap-actions">
+              <Button block variant="soft" disabled={swapBusy} onClick={() => doSwap(false)}>
+                {t("workout.swap")}
+              </Button>
+              {/* violet, not danger: excluding is a preference, and it's
+                  reversible from the Library. */}
+              <Button block variant="violet" disabled={swapBusy} onClick={() => doSwap(true)}>
+                {t("workout.swapExclude")}
+              </Button>
+            </div>
+            {swapError && (
+              <p className="rating-error">⚠️ {swapError.includes("no alternative")
+                ? t("workout.swapNone") : swapError}</p>
+            )}
+            <button className="rating-skip" disabled={swapBusy}
+              onClick={() => setSwapItem(null)}>
+              {t("common.cancel")}
             </button>
           </div>
         </div>

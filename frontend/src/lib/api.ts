@@ -1,6 +1,6 @@
 import type {
-  DietInfo, Exercise, HealthSummary, HistoryEntry, Metrics, Plan, Profile,
-  QuickKind, QuickSession, Settings, Streak, Today, WaterToday,
+  DietInfo, Exercise, HealthSummary, HistoryEntry, Metrics, Plan, PlanItem,
+  Profile, QuickKind, QuickSession, Settings, Streak, Today, WaterToday,
 } from "./types";
 
 async function j<T>(res: Response): Promise<T> {
@@ -38,6 +38,8 @@ export const api = {
     }).then(j<{ ok: boolean }>),
 
   getPlan: () => fetch("/api/plan").then(j<Plan | null>),
+  swapItem: (plan_item_id: number, exclude = false) =>
+    post("/api/plan/swap", { plan_item_id, exclude }).then(j<PlanItem>),
   regeneratePlan: () =>
     post("/api/plan/regenerate", {}).then(j<{ plan: Plan; progression_factor: number }>),
 

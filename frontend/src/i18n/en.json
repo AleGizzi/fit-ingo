@@ -102,7 +102,11 @@
     "rest": "Rest",
     "skipRest": "Skip rest",
     "pause": "Pause",
-    "resumeTimer": "Resume"
+    "resumeTimer": "Resume",
+    "swapOpen": "Swap exercise",
+    "swap": "Swap for something similar",
+    "swapExclude": "Swap and don't suggest again",
+    "swapNone": "No alternative available"
   },
   "streak": {
     "freezes": "Streak freezes",
@@ -160,6 +164,8 @@
     "title": "Exercise library",
     "search": "Search exercises…",
     "empty": "No exercises match your filters.",
+    "excluded": "Excluded",
+    "restore": "Restore",
     "type": {
       "all": "All", "strength": "Strength", "cardio": "Cardio",
       "mobility": "Mobility", "stretch": "Stretch", "balance": "Balance"
