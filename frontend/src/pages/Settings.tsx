@@ -17,6 +17,7 @@ export function Settings() {
     termux_cli: boolean;
     last_fired: string | null;
     last_error: string | null;
+    last_tick: string | null;
   } | null>(null);
   const [testBusy, setTestBusy] = useState(false);
   const [testResult, setTestResult] = useState<{ ok: boolean; message: string } | null>(null);
@@ -225,6 +226,14 @@ export function Settings() {
           </>
         )}
 
+        <div className="spread">
+          <label className="field-label" style={{ margin: 0 }}>{t("settings.weeklyRecap")}</label>
+          <Toggle
+            on={settings.weekly_recap_enabled}
+            onChange={(v) => patch({ weekly_recap_enabled: v })}
+          />
+        </div>
+
         <div className="notif-status">
           {notifStatus ? (
             notifStatus.termux_cli ? (
@@ -237,6 +246,13 @@ export function Settings() {
           )}
           {notifStatus?.last_error && (
             <p className="muted notif-error">{notifStatus.last_error}</p>
+          )}
+          {notifStatus && (
+            <p className={schedulerAlive(notifStatus.last_tick) ? "notif-ok" : "notif-warn"}>
+              {schedulerAlive(notifStatus.last_tick)
+                ? t("settings.schedulerOk")
+                : t("settings.schedulerStale")}
+            </p>
           )}
         </div>
         <Button variant="soft" onClick={sendTestNotification} disabled={testBusy}>
@@ -398,6 +414,13 @@ export function Settings() {
       )}
     </div>
   );
+}
+
+/** The scheduler ticks every 30 s; anything older than two minutes means the
+ *  Termux process was killed and reminders have silently stopped. */
+function schedulerAlive(lastTick: string | null): boolean {
+  if (!lastTick) return false;
+  return Date.now() - new Date(lastTick).getTime() < 120_000;
 }
 
 function Toggle({ on, onChange }: { on: boolean; onChange: (v: boolean) => void }) {

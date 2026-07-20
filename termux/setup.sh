@@ -5,7 +5,8 @@ set -e
 
 echo "==> Updating packages"
 pkg update -y
-pkg install -y python termux-api
+# curl powers the "+250 ml" button on water reminders.
+pkg install -y python termux-api curl
 
 # Storage access (optional, lets you keep the DB on shared storage if you want).
 termux-setup-storage || true

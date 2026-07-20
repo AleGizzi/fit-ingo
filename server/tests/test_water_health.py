@@ -49,6 +49,28 @@ def test_water_settings_roundtrip(client):
     assert client.get("/api/water").get_json()["goal_ml"] == 2500
 
 
+def test_every_settings_field_round_trips(client):
+    """Regression: weekly_recap_enabled was missing from the UPDATE, so its
+    toggle silently did nothing. Assert the whole surface persists."""
+    before = client.get("/api/settings").get_json()
+    changed = {
+        "language": "es", "theme": "dark",
+        "reminder_enabled": not before["reminder_enabled"],
+        "reminder_times": ["07:30", "19:45"],
+        "nag_enabled": not before["nag_enabled"], "nag_time": "22:15",
+        "water_goal_ml": 3000,
+        "water_reminder_enabled": not before["water_reminder_enabled"],
+        "water_interval_min": 45,
+        "water_start": "08:15", "water_end": "20:45",
+        "weekly_recap_enabled": not before["weekly_recap_enabled"],
+        "excluded_exercises": ["burpee"],
+    }
+    client.post("/api/settings", json=changed)
+    after = client.get("/api/settings").get_json()
+    for key, value in changed.items():
+        assert after[key] == value, f"{key} did not persist"
+
+
 def test_profile_change_clears_water(client):
     client.post("/api/water", json={"delta_ml": 500})
     client.post("/api/profile", json={

@@ -13,7 +13,7 @@ from __future__ import annotations
 import json
 import logging
 import os
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from pathlib import Path
 
 from flask import (
@@ -737,14 +737,17 @@ def save_settings():
     water_end = body.get("water_end", cur["water_end"])
     excluded = json.dumps(sorted(set(
         body.get("excluded_exercises", cur["excluded_exercises"]))))
+    recap_en = int(bool(body.get("weekly_recap_enabled", cur["weekly_recap_enabled"])))
     with db._lock:
         conn.execute(
             """UPDATE settings SET language=?, theme=?, reminder_enabled=?,
                reminder_times=?, nag_enabled=?, nag_time=?,
                water_goal_ml=?, water_reminder_enabled=?, water_interval_min=?,
-               water_start=?, water_end=?, excluded_exercises=? WHERE id=1""",
+               water_start=?, water_end=?, excluded_exercises=?,
+               weekly_recap_enabled=? WHERE id=1""",
             (lang, theme, rem_en, rem_times, nag_en, nag_time,
-             water_goal, water_en, water_int, water_start, water_end, excluded),
+             water_goal, water_en, water_int, water_start, water_end, excluded,
+             recap_en),
         )
         conn.commit()
     return jsonify(db.get_settings())
@@ -795,6 +798,26 @@ def _water_today() -> tuple[int, int]:
     return db.get_water(_today_iso()), db.get_settings()["water_goal_ml"]
 
 
+def _weekly_recap() -> dict:
+    """Numbers for the Sunday recap notification: this ISO week's completed
+    workouts vs scheduled, water drunk, and the current streak."""
+    conn = db.get_conn()
+    today = date.today()
+    monday = (today - timedelta(days=today.weekday())).isoformat()
+    done = conn.execute(
+        "SELECT COUNT(*) c FROM workout_log WHERE completed=1 AND date >= ?",
+        (monday,)).fetchone()["c"]
+    ml = conn.execute(
+        "SELECT COALESCE(SUM(ml), 0) s FROM water_log WHERE date >= ?",
+        (monday,)).fetchone()["s"]
+    return {
+        "done": done,
+        "planned": len(training_weekdays()),
+        "liters": round(ml / 1000, 1),
+        "streak": _streak()["current"],
+    }
+
+
 def _nightly_backup() -> None:
     """Rolling week of local snapshots next to the database."""
     backups = db.db_path().parent / "backups"
@@ -809,6 +832,7 @@ scheduler = ReminderScheduler(
     is_today_done=is_today_done,
     get_water_today=_water_today,
     nightly_backup=_nightly_backup,
+    get_recap=_weekly_recap,
 )
 
 

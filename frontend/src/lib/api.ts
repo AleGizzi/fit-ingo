@@ -94,7 +94,12 @@ export const api = {
   },
   getNotificationStatus: () =>
     fetch("/api/notifications/status").then(
-      j<{ termux_cli: boolean; last_fired: string | null; last_error: string | null }>,
+      j<{
+        termux_cli: boolean;
+        last_fired: string | null;
+        last_error: string | null;
+        last_tick: string | null;
+      }>,
     ),
   testNotification: () =>
     post("/api/notifications/test", {}).then(
