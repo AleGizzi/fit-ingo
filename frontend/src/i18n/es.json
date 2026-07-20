@@ -94,7 +94,14 @@
     "restSec": "{{n}}s descanso",
     "reviewing": "Revisando",
     "saveError": "No se pudo guardar tu entrenamiento.",
-    "retry": "Reintentar"
+    "retry": "Reintentar",
+    "guidedView": "Guiado",
+    "listView": "Lista",
+    "setOf": "Serie {{n}} de {{total}}",
+    "rest": "Descanso",
+    "skipRest": "Saltar descanso",
+    "pause": "Pausa",
+    "resumeTimer": "Continuar"
   },
   "streak": {
     "freezes": "Protectores de racha",

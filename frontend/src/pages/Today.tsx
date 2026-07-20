@@ -8,6 +8,7 @@ import { Flame } from "../components/Flame";
 import { WeekRing } from "../components/WeekRing";
 import type { DayState } from "../components/WeekRing";
 import { estimateMinutes, exName, todayWeekday } from "../lib/format";
+import { haptic } from "../lib/haptics";
 import type { Metrics, Plan, Streak, Today as TodayT, WaterToday } from "../lib/types";
 import "./today.css";
 
@@ -39,8 +40,11 @@ export function Today() {
 
   async function drink(delta: number) {
     if (!water) return;
+    const next = Math.max(0, water.ml + delta);
+    // Celebrate only the below→at-goal crossing, not every tap past it.
+    if (water.ml < water.goal_ml && next >= water.goal_ml) haptic.goal();
     // Optimistic; the response corrects if the server clamps.
-    setWater({ ...water, ml: Math.max(0, water.ml + delta) });
+    setWater({ ...water, ml: next });
     try {
       setWater(await api.logWater(delta));
     } catch {

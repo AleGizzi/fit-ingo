@@ -3,8 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useApp } from "../AppContext";
 import { api } from "../lib/api";
-import { Button } from "../components/ui";
+import { Button, Segmented } from "../components/ui";
 import { exInstructions, exName, itemDose } from "../lib/format";
+import { haptic } from "../lib/haptics";
+import { GuidedFlow } from "./GuidedFlow";
 import type { PlanItem, Streak, Today } from "../lib/types";
 import "./workout.css";
 
@@ -21,6 +23,7 @@ export function Workout() {
   const [freezeEarned, setFreezeEarned] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [view, setView] = useState<"guided" | "list">("guided");
   // Set once the user changes something, so autosave doesn't re-post on load.
   const dirtyRef = useRef(false);
 
@@ -40,25 +43,10 @@ export function Workout() {
   const doneCount = items.filter((i) => doneIds.has(itemKey(i))).length;
   const isReviewing = !!today?.log?.completed;
 
-  if (!today) return <p className="muted">{t("common.loading")}</p>;
-  if (!today.day || today.day.is_rest) {
-    nav("/today", { replace: true });
-    return null;
-  }
-
-  function toggle(item: PlanItem) {
-    if (isReviewing) return;
-    dirtyRef.current = true;
-    const key = itemKey(item);
-    setDoneIds((prev) => {
-      const next = new Set(prev);
-      next.has(key) ? next.delete(key) : next.add(key);
-      return next;
-    });
-  }
-
   // Autosave partial progress (best-effort) so leaving mid-workout never loses
   // your checkmarks. Kept as completed=false; finishing sets the real state.
+  // NOTE: must stay ABOVE the early returns — hooks after a conditional
+  // return change the hook count between renders (React #310).
   useEffect(() => {
     if (isReviewing || !dirtyRef.current) return;
     const id = setTimeout(() => {
@@ -72,6 +60,30 @@ export function Workout() {
     }, 600);
     return () => clearTimeout(id);
   }, [doneIds, isReviewing, total]);
+
+  if (!today) return <p className="muted">{t("common.loading")}</p>;
+  if (!today.day || today.day.is_rest) {
+    nav("/today", { replace: true });
+    return null;
+  }
+
+  function toggle(item: PlanItem) {
+    if (isReviewing) return;
+    dirtyRef.current = true;
+    haptic.tick();
+    const key = itemKey(item);
+    setDoneIds((prev) => {
+      const next = new Set(prev);
+      next.has(key) ? next.delete(key) : next.add(key);
+      return next;
+    });
+  }
+
+  // Guided mode completes whole items (never un-checks).
+  function completeKey(key: string) {
+    dirtyRef.current = true;
+    setDoneIds((prev) => new Set(prev).add(key));
+  }
 
   async function finish(perceived?: number) {
     const completed = doneCount >= Math.ceil(total * 0.6); // 60%+ counts as done
@@ -87,6 +99,7 @@ export function Workout() {
       });
       setSavedStreak(res.streak);
       setFreezeEarned(res.freeze_earned);
+      if (completed) haptic.finish();
       // Brief celebration, then back to Today (longer when a freeze drops).
       setTimeout(() => nav("/today", { replace: true }),
         completed ? (res.freeze_earned ? 2200 : 1400) : 300);
@@ -101,6 +114,8 @@ export function Workout() {
     block: b,
     items: items.filter((i) => i.block === b),
   })).filter((g) => g.items.length);
+  const flatItems = grouped.flatMap((g) => g.items);
+  const showGuided = view === "guided" && !isReviewing && !showRating && !savedStreak;
 
   return (
     <div className="wk">
@@ -114,6 +129,31 @@ export function Workout() {
 
       {isReviewing && <div className="wk-reviewing-badge">{t("workout.reviewing")}</div>}
 
+      {!isReviewing && (
+        <div className="wk-viewswitch">
+          <Segmented<"guided" | "list">
+            value={view}
+            onChange={setView}
+            options={[
+              { value: "guided", label: t("workout.guidedView") },
+              { value: "list", label: t("workout.listView") },
+            ]}
+          />
+        </div>
+      )}
+
+      {showGuided && (
+        <GuidedFlow
+          items={flatItems}
+          exercises={exercises}
+          doneKeys={doneIds}
+          keyOf={itemKey}
+          onCompleteItem={completeKey}
+          onAllDone={() => setShowRating(true)}
+        />
+      )}
+
+      {!showGuided && (
       <div className="wk-list">
         {grouped.map((g) => (
           <section key={g.block} className="wk-section">
@@ -149,6 +189,7 @@ export function Workout() {
           </section>
         ))}
       </div>
+      )}
 
       <div className="wk-footer">
         {isReviewing ? (

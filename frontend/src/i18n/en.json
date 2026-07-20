@@ -94,7 +94,14 @@
     "restSec": "{{n}}s rest",
     "reviewing": "Reviewing",
     "saveError": "Couldn't save your workout.",
-    "retry": "Try again"
+    "retry": "Try again",
+    "guidedView": "Guided",
+    "listView": "List",
+    "setOf": "Set {{n}} of {{total}}",
+    "rest": "Rest",
+    "skipRest": "Skip rest",
+    "pause": "Pause",
+    "resumeTimer": "Resume"
   },
   "streak": {
     "freezes": "Streak freezes",

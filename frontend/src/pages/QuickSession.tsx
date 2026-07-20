@@ -5,6 +5,7 @@ import { useApp } from "../AppContext";
 import { api } from "../lib/api";
 import { Button } from "../components/ui";
 import { exInstructions, exName, itemDose } from "../lib/format";
+import { haptic } from "../lib/haptics";
 import type { QuickKind, QuickSession as QuickSessionT } from "../lib/types";
 import "./workout.css";
 
@@ -47,6 +48,7 @@ export function QuickSession() {
   const doneCount = done.size;
 
   function toggle(pos: number) {
+    haptic.tick();
     setDone((prev) => {
       const next = new Set(prev);
       next.has(pos) ? next.delete(pos) : next.add(pos);
@@ -55,6 +57,7 @@ export function QuickSession() {
   }
 
   function finish() {
+    haptic.finish();
     setFinished(true);
     setTimeout(() => nav(-1), 1400);
   }

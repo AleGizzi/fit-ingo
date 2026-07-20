@@ -281,3 +281,105 @@
   color: #7cc4fa;
   animation: pop 0.9s ease-in-out infinite;
 }
+
+/* View switch (Guided | List) */
+.wk-viewswitch {
+  margin: 4px auto 14px;
+  max-width: 260px;
+}
+
+/* Guided flow */
+.gf {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 18px 6px 0;
+}
+.gf-name {
+  font-size: 26px;
+  font-weight: 900;
+  margin-top: 4px;
+}
+.gf-sets {
+  margin-top: 8px;
+  font-size: 15px;
+  color: var(--violet);
+  font-weight: 800;
+}
+.gf-timer, .gf-reps {
+  margin: 26px 0 8px;
+  width: 100%;
+  max-width: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+.gf-count {
+  font-size: 72px;
+  line-height: 1;
+  color: var(--ember);
+}
+.gf-timer-rest .gf-count {
+  color: var(--mint);
+}
+.gf-count-lbl, .gf-rest-lbl {
+  font-weight: 800;
+  color: var(--ink-2);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 13px;
+}
+.gf-rest-lbl {
+  color: var(--mint);
+}
+.gf-track {
+  width: 100%;
+  height: 10px;
+  background: var(--track);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+}
+.gf-fill {
+  height: 100%;
+  border-radius: var(--radius-pill);
+  transition: width 0.2s linear;
+}
+.gf-fill-work {
+  background: linear-gradient(90deg, var(--ember), var(--ember-deep));
+}
+.gf-fill-rest {
+  background: linear-gradient(90deg, var(--mint), #34e0af);
+}
+.gf-pause {
+  border: none;
+  background: var(--card-2);
+  color: var(--ink);
+  font-weight: 800;
+  font-size: 14px;
+  padding: 10px 22px;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+}
+.gf-done-btn {
+  margin-top: 6px;
+  border: none;
+  background: var(--mint);
+  color: #fff;
+  font-weight: 900;
+  font-size: 18px;
+  padding: 16px 46px;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  box-shadow: 0 4px 0 #00a374;
+  transition: transform var(--tap);
+}
+.gf-done-btn:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 #00a374;
+}
+.gf-instructions {
+  max-width: 320px;
+  margin-top: 22px;
+}
