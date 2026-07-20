@@ -176,5 +176,25 @@ export interface Metrics {
     workouts_completed: number;
     workouts_logged: number;
     completion_rate: number;
+    total_reps: number;
+    total_minutes: number;
+    weeks_active: number;
   };
+}
+
+export interface HistoryItem {
+  exercise_id: string;
+  block: string;
+  position: number;
+  done: boolean;
+}
+
+export interface HistoryEntry {
+  date: string;
+  completed: number;
+  items: HistoryItem[];
+  items_total: number | null;
+  perceived_difficulty: number | null;
+  avg_hr: number | null;
+  max_hr: number | null;
 }

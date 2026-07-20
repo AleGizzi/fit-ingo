@@ -118,6 +118,10 @@ export function Today() {
           <div className="today-state-icon">🌙</div>
           <h2 className="today-state-title">{t("today.restTitle")}</h2>
           <p className="muted">{t("today.restBody")}</p>
+          <Button variant="soft" onClick={() => nav("/quick/wellness")}>
+            🧘 {t("quick.wellnessTitle")}
+          </Button>
+          <p className="muted rest-bonus-note">{t("today.restBonus")}</p>
         </Card>
       ) : (
         <Card className="workout-card">

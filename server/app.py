@@ -74,14 +74,17 @@ def completed_dates() -> list[str]:
     return [r["date"] for r in rows]
 
 
-def _save_plan(days: list[planner_engine.PlanDay], profile: dict, week: int = 1) -> int:
+def _save_plan(days: list[planner_engine.PlanDay], profile: dict, week: int = 1,
+               extra_meta: dict | None = None) -> int:
     """Persist a generated plan, deactivating any previous one. Returns plan id."""
     conn = db.get_conn()
+    meta = {"goal": profile.get("goal"), "level": profile.get("level")}
+    meta.update(extra_meta or {})
     with db._lock:
         conn.execute("UPDATE plan SET active=0 WHERE active=1")
         cur = conn.execute(
             "INSERT INTO plan(week, active, meta) VALUES (?,1,?)",
-            (week, json.dumps({"goal": profile.get("goal"), "level": profile.get("level")})),
+            (week, json.dumps(meta)),
         )
         plan_id = cur.lastrowid
         for day in days:
@@ -231,7 +234,8 @@ def regenerate_plan():
     conn = db.get_conn()
     prev = conn.execute("SELECT week FROM plan WHERE active=1").fetchone()
     week = (prev["week"] + 1) if prev else 1
-    pid = _save_plan(days, profile, week=week)
+    pid = _save_plan(days, profile, week=week,
+                     extra_meta={"progression_factor": round(factor, 2)})
     return jsonify({"plan": _plan_to_json(pid), "progression_factor": factor})
 
 
@@ -368,6 +372,75 @@ def get_streak():
     return jsonify(_streak())
 
 
+def _plan_day_items(conn, plan_id: int | None, weekday: int) -> list[dict]:
+    """Items of the given plan's day for that weekday ([] if plan gone)."""
+    if plan_id is None:
+        return []
+    day = conn.execute(
+        "SELECT id FROM plan_days WHERE plan_id=? AND weekday=?",
+        (plan_id, weekday),
+    ).fetchone()
+    if not day:
+        return []
+    return [dict(r) for r in conn.execute(
+        "SELECT * FROM plan_items WHERE plan_day_id=? ORDER BY position",
+        (day["id"],),
+    ).fetchall()]
+
+
+@app.get("/api/history")
+def get_history():
+    """Past workout days, newest first, with per-item done state.
+
+    Done-keys are 'exercise_id:block:position' (normalized on write since
+    v1.4; legacy bare ids are normalized here on read). Keys that no longer
+    match the logged plan (plan regenerated/deleted) still render from the
+    key itself — never 500 on stale history.
+    """
+    limit = min(int(request.args.get("limit", 30)), 120)
+    conn = db.get_conn()
+    rows = conn.execute(
+        "SELECT * FROM workout_log ORDER BY date DESC LIMIT ?", (limit,)
+    ).fetchall()
+
+    out = []
+    for row in rows:
+        try:
+            raw = json.loads(row["items_done"] or "[]")
+        except ValueError:
+            raw = []
+        keys = set(db.normalize_item_keys(raw))
+        weekday = date.fromisoformat(row["date"]).weekday()
+        plan_items = _plan_day_items(conn, row["plan_id"], weekday)
+
+        items = []
+        matched = set()
+        for it in plan_items:
+            key = f"{it['exercise_id']}:{it['block']}:{it['position']}"
+            items.append({
+                "exercise_id": it["exercise_id"], "block": it["block"],
+                "position": it["position"], "done": key in keys,
+            })
+            matched.add(key)
+        # Stale keys (plan changed since): still show what was done.
+        for key in sorted(keys - matched):
+            eid, block, pos = key.rsplit(":", 2)
+            items.append({"exercise_id": eid, "block": block,
+                          "position": int(pos) if pos.isdigit() else 0,
+                          "done": True})
+
+        out.append({
+            "date": row["date"],
+            "completed": row["completed"],
+            "items": items,
+            "items_total": row["items_total"],
+            "perceived_difficulty": row["perceived_difficulty"],
+            "avg_hr": row["avg_hr"],
+            "max_hr": row["max_hr"],
+        })
+    return jsonify(out)
+
+
 @app.get("/api/metrics")
 def get_metrics():
     """Progress data for charts: weight history, completion history, streak."""
@@ -379,6 +452,33 @@ def get_metrics():
         "FROM workout_log ORDER BY date").fetchall()]
     total = len(logs)
     completed = sum(1 for l in logs if l["completed"])
+
+    # Lifetime effort totals from what was actually ticked off (P4).
+    full_rows = conn.execute(
+        "SELECT date, plan_id, completed, items_done, duration_min "
+        "FROM workout_log WHERE completed=1").fetchall()
+    total_reps = 0
+    total_minutes = 0
+    weeks = set()
+    for row in full_rows:
+        weeks.add(date.fromisoformat(row["date"]).isocalendar()[:2])
+        try:
+            keys = set(db.normalize_item_keys(json.loads(row["items_done"] or "[]")))
+        except ValueError:
+            keys = set()
+        weekday = date.fromisoformat(row["date"]).weekday()
+        done_items = [
+            it for it in _plan_day_items(conn, row["plan_id"], weekday)
+            if f"{it['exercise_id']}:{it['block']}:{it['position']}" in keys
+        ]
+        for it in done_items:
+            if it["reps"]:
+                total_reps += (it["sets"] or 1) * it["reps"]
+        if row["duration_min"]:
+            total_minutes += row["duration_min"]
+        else:
+            total_minutes += 4 * len(done_items)  # rough but honest estimate
+
     return jsonify({
         "weights": weights,
         "logs": logs,
@@ -387,6 +487,9 @@ def get_metrics():
             "workouts_completed": completed,
             "workouts_logged": total,
             "completion_rate": round(completed / total, 2) if total else 0,
+            "total_reps": total_reps,
+            "total_minutes": total_minutes,
+            "weeks_active": len(weeks),
         },
     })
 

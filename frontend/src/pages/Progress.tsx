@@ -1,9 +1,15 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useApp } from "../AppContext";
 import { api } from "../lib/api";
 import { Button, Card } from "../components/ui";
-import type { Activity, HealthSummary, Metrics } from "../lib/types";
+import { exName } from "../lib/format";
+import type {
+  Activity, HealthSummary, HistoryEntry, Metrics, Plan,
+} from "../lib/types";
 import "./progress.css";
+
+const DIFF_EMOJI = ["😄", "🙂", "😐", "😓", "🥵"];
 
 export function Progress() {
   const { t } = useTranslation();
@@ -11,10 +17,17 @@ export function Progress() {
   const [weight, setWeight] = useState("");
   const [saving, setSaving] = useState(false);
   const [health, setHealth] = useState<HealthSummary | null>(null);
+  const [history, setHistory] = useState<HistoryEntry[]>([]);
+  const [plan, setPlan] = useState<Plan | null>(null);
 
   const load = () => api.getMetrics().then(setMetrics).catch(() => setMetrics(null));
   const loadHealth = () => api.getHealthSummary().then(setHealth).catch(() => setHealth(null));
-  useEffect(() => { load(); loadHealth(); }, []);
+  useEffect(() => {
+    load();
+    loadHealth();
+    api.getHistory(14).then(setHistory).catch(() => setHistory([]));
+    api.getPlan().then(setPlan).catch(() => setPlan(null));
+  }, []);
 
   async function addWeight() {
     const w = parseFloat(weight);
@@ -39,6 +52,12 @@ export function Progress() {
         <div>
           <span className="eyebrow">{t("app.name")}</span>
           <h1 className="page-title">{t("progress.title")}</h1>
+          {typeof plan?.meta?.progression_factor === "number" &&
+            plan.meta.progression_factor !== 1 && (
+            <span className={`volume-chip ${plan.meta.progression_factor > 1 ? "volume-up" : ""}`}>
+              {t("progress.volumeChip", { f: plan.meta.progression_factor.toFixed(2) })}
+            </span>
+          )}
         </div>
       </header>
 
@@ -47,6 +66,12 @@ export function Progress() {
         <StatTile value={streak.best} label={t("progress.best")} accent="gold" />
         <StatTile value={`${Math.round(totals.completion_rate * 100)}%`} label={t("progress.completion")} accent="mint" />
         <StatTile value={totals.workouts_completed} label={t("progress.workouts")} accent="violet" />
+      </div>
+
+      <div className="stat-grid stat-grid-3">
+        <StatTile value={totals.total_reps.toLocaleString()} label={t("progress.totalReps")} accent="ember" />
+        <StatTile value={totals.total_minutes.toLocaleString()} label={t("progress.totalMinutes")} accent="mint" />
+        <StatTile value={totals.weeks_active} label={t("progress.weeksActive")} accent="gold" />
       </div>
 
       <Card>
@@ -78,8 +103,59 @@ export function Progress() {
         <ConsistencyChart logs={metrics.logs} />
       </Card>
 
+      {history.length > 0 && (
+        <Card>
+          <span className="eyebrow">{t("progress.history")}</span>
+          <ul className="history-list">
+            {history.map((h) => <HistoryRow key={h.date} entry={h} />)}
+          </ul>
+        </Card>
+      )}
+
       <HealthSection health={health} onImported={loadHealth} />
     </div>
+  );
+}
+
+/** One past day; tap to expand the exercise-level detail inline. */
+function HistoryRow({ entry }: { entry: HistoryEntry }) {
+  const { t, i18n } = useTranslation();
+  const { exercises } = useApp();
+  const [open, setOpen] = useState(false);
+  const doneCount = entry.items.filter((i) => i.done).length;
+  const when = new Date(entry.date + "T00:00:00").toLocaleDateString(
+    i18n.language === "es" ? "es" : "en", { weekday: "short", month: "short", day: "numeric" });
+  const diff = entry.perceived_difficulty
+    ? DIFF_EMOJI[Math.min(4, Math.max(0, Math.round(entry.perceived_difficulty) - 1))]
+    : null;
+
+  return (
+    <li className="history-row">
+      <button className="history-head" onClick={() => setOpen((o) => !o)}>
+        <span className={`history-mark ${entry.completed ? "history-ok" : "history-miss"}`}>
+          {entry.completed ? "✓" : "✗"}
+        </span>
+        <span className="history-date">{when}</span>
+        <span className="history-bits num">
+          {doneCount}/{entry.items_total ?? entry.items.length}
+          {diff && <span className="history-diff"> {diff}</span>}
+          {entry.avg_hr != null && <span> · ♥ {entry.avg_hr}</span>}
+        </span>
+        <span className="history-chev">{open ? "▾" : "▸"}</span>
+      </button>
+      {open && (
+        <ul className="history-items">
+          {entry.items.map((it, i) => (
+            <li key={i} className={it.done ? "hi-done" : "hi-missed"}>
+              {it.done ? "✓" : "·"} {exName(exercises[it.exercise_id], i18n.language)}
+            </li>
+          ))}
+          {entry.items.length === 0 && (
+            <li className="hi-missed">· {t("progress.noData")}</li>
+          )}
+        </ul>
+      )}
+    </li>
   );
 }
 

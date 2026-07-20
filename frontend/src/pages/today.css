@@ -241,3 +241,11 @@
   background: #12314f;
   color: #7cc4fa;
 }
+
+.rest-bonus-note {
+  font-size: 12px;
+  margin-top: 6px;
+}
+.today-state .btn {
+  margin-top: 14px;
+}

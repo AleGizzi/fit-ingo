@@ -1,6 +1,6 @@
 import type {
-  DietInfo, Exercise, HealthSummary, Metrics, Plan, Profile, QuickKind,
-  QuickSession, Settings, Streak, Today, WaterToday,
+  DietInfo, Exercise, HealthSummary, HistoryEntry, Metrics, Plan, Profile,
+  QuickKind, QuickSession, Settings, Streak, Today, WaterToday,
 } from "./types";
 
 async function j<T>(res: Response): Promise<T> {
@@ -57,6 +57,8 @@ export const api = {
 
   getStreak: () => fetch("/api/streak").then(j<Streak>),
   getMetrics: () => fetch("/api/metrics").then(j<Metrics>),
+  getHistory: (limit = 30) =>
+    fetch(`/api/history?limit=${limit}`).then(j<HistoryEntry[]>),
   logWeight: (weight_kg: number, date?: string) =>
     post("/api/weight", { weight_kg, date }).then(j<{ ok: boolean }>),
 

@@ -81,6 +81,7 @@
     "streak": "day streak",
     "streakBest": "Best: {{n}}",
     "atRisk": "Train today to keep your streak!",
+    "restBonus": "Optional — it won't touch your streak.",
     "week": "This week",
     "viewWorkout": "View workout"
   },
@@ -171,7 +172,12 @@
     "logWeight": "Log weight", "weightKg": "Weight (kg)", "add": "Add",
     "consistency": "Consistency (last 12 weeks)",
     "noWeight": "Log your weight to see the trend.",
-    "noData": "Complete a workout to start tracking."
+    "noData": "Complete a workout to start tracking.",
+    "totalReps": "Reps all-time",
+    "totalMinutes": "Minutes trained",
+    "weeksActive": "Weeks active",
+    "volumeChip": "Volume ×{{f}}",
+    "history": "Workout history"
   },
   "settings": {
     "title": "Settings",

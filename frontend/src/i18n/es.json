@@ -81,6 +81,7 @@
     "streak": "días de racha",
     "streakBest": "Mejor: {{n}}",
     "atRisk": "¡Entrena hoy para mantener tu racha!",
+    "restBonus": "Opcional — no afecta tu racha.",
     "week": "Esta semana",
     "viewWorkout": "Ver entrenamiento"
   },
@@ -171,7 +172,12 @@
     "logWeight": "Registrar peso", "weightKg": "Peso (kg)", "add": "Añadir",
     "consistency": "Constancia (últimas 12 semanas)",
     "noWeight": "Registra tu peso para ver la evolución.",
-    "noData": "Completa un entrenamiento para empezar a registrar."
+    "noData": "Completa un entrenamiento para empezar a registrar.",
+    "totalReps": "Reps totales",
+    "totalMinutes": "Minutos entrenados",
+    "weeksActive": "Semanas activas",
+    "volumeChip": "Volumen ×{{f}}",
+    "history": "Historial de entrenos"
   },
   "settings": {
     "title": "Ajustes",
