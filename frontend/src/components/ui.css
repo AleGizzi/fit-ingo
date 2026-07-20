@@ -16,6 +16,11 @@
   transition: transform var(--tap), box-shadow var(--tap), filter var(--tap);
   -webkit-tap-highlight-color: transparent;
   user-select: none;
+  /* Anchors styled as buttons (e.g. the backup download) must not keep
+     link underlining or inline layout. */
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
 }
 .btn:active {
   transform: translateY(4px);

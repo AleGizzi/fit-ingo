@@ -508,3 +508,92 @@ def reset_all() -> None:
         conn.execute("DELETE FROM streak_state")
         conn.execute("INSERT OR IGNORE INTO streak_state(id) VALUES (1)")
         conn.commit()
+
+
+# ---- backup / restore -----------------------------------------------------
+
+REQUIRED_TABLES = {"profile", "settings", "workout_log", "exercises"}
+
+
+def snapshot_to(path) -> None:
+    """Consistent copy of the live database.
+
+    Uses SQLite's backup API rather than a file copy: with WAL active, the
+    .db file alone is an incomplete picture (recent pages live in the -wal),
+    so copying it would produce a torn or stale snapshot.
+    """
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    dest = sqlite3.connect(str(path))
+    try:
+        with _lock:
+            get_conn().backup(dest)
+    finally:
+        dest.close()
+
+
+def validate_backup(path) -> str | None:
+    """None if `path` is a usable Fit-ingo database, else a message saying
+    why — shown to the user verbatim, so keep it plain."""
+    path = Path(path)
+    if not path.exists() or path.stat().st_size == 0:
+        return "That file is empty."
+    try:
+        conn = sqlite3.connect(f"file:{path}?mode=ro", uri=True)
+    except sqlite3.Error:
+        return "That file isn't a database."
+    try:
+        row = conn.execute("PRAGMA integrity_check").fetchone()
+        if not row or row[0] != "ok":
+            return "That backup is damaged and can't be restored."
+        names = {r[0] for r in conn.execute(
+            "SELECT name FROM sqlite_master WHERE type='table'")}
+        if REQUIRED_TABLES - names:
+            return "That's a database, but not a Fit-ingo backup."
+    except sqlite3.DatabaseError:
+        return "That file isn't a database."
+    finally:
+        conn.close()
+    return None
+
+
+def swap_database(new_path) -> None:
+    """Replace the live database file with `new_path`.
+
+    Other threads hold their own connections to the old file (see get_conn),
+    and we cannot reach into their thread-locals to close them. Instead we
+    reset the module state so every thread lazily opens a fresh connection
+    against the new file on its next call; the old handles are released when
+    those threads next touch the DB or die. This is the one place allowed to
+    poke at _local/_schema_ready.
+    """
+    global _local, _schema_ready
+    with _lock:
+        conn = getattr(_local, "conn", None)
+        if conn is not None:
+            conn.close()
+        target = db_path()
+        os.replace(str(new_path), str(target))
+        # Stale WAL/SHM from the replaced database would be applied on top of
+        # the restored file — remove them.
+        for suffix in ("-wal", "-shm"):
+            side = Path(str(target) + suffix)
+            if side.exists():
+                side.unlink()
+        _local = threading.local()
+        _schema_ready = False
+    get_conn()  # reopen + run migrations if the backup is an older schema
+
+
+def prune_backups(directory, keep: int = 7) -> list[Path]:
+    """Keep the newest `keep` snapshots; return the ones deleted."""
+    directory = Path(directory)
+    if not directory.exists():
+        return []
+    files = sorted(directory.glob("fitingo-*.db"),
+                   key=lambda p: p.name, reverse=True)
+    removed = []
+    for old in files[keep:]:
+        old.unlink()
+        removed.append(old)
+    return removed

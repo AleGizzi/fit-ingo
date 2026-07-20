@@ -108,6 +108,14 @@
     "swapExclude": "Cambiar y no sugerir más",
     "swapNone": "No hay alternativa disponible"
   },
+  "backup": {
+    "title": "Copia de seguridad",
+    "download": "Descargar copia",
+    "restore": "Restaurar desde copia",
+    "confirmTitle": "¿Restaurar esta copia?",
+    "confirmBody": "Esto reemplaza todo lo que hay en la app — perfil, plan, registros y ajustes. Se guarda antes una instantánea de tus datos actuales, pero dejarán de mostrarse en la app.",
+    "help": "Tus datos viven solo en este dispositivo, así que guarda una copia en un lugar seguro. La app también crea una instantánea automática cada noche y conserva las últimas 7 en data/backups/."
+  },
   "streak": {
     "freezes": "Protectores de racha",
     "frozenBanner": "Un protector salvó tu racha el {{date}}",

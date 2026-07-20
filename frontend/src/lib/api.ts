@@ -83,6 +83,15 @@ export const api = {
   saveSettings: (s: Partial<Settings>) => post("/api/settings", s).then(j<Settings>),
 
   resetApp: () => post("/api/reset", {}).then(j<{ ok: boolean }>),
+
+  /** Backup downloads via a plain <a download> — no fetch, so the file never
+   *  passes through JS memory. Restore posts the file back. */
+  restoreBackup: (file: File) => {
+    const form = new FormData();
+    form.append("file", file);
+    return fetch("/api/restore", { method: "POST", body: form })
+      .then(j<{ ok: boolean }>);
+  },
   getNotificationStatus: () =>
     fetch("/api/notifications/status").then(
       j<{ termux_cli: boolean; last_fired: string | null; last_error: string | null }>,

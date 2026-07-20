@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useApp } from "../AppContext";
@@ -24,6 +24,10 @@ export function Settings() {
   const [resetting, setResetting] = useState(false);
   const [updateBusy, setUpdateBusy] = useState(false);
   const [updateMsg, setUpdateMsg] = useState<string | null>(null);
+  const restoreRef = useRef<HTMLInputElement>(null);
+  const [pendingRestore, setPendingRestore] = useState<File | null>(null);
+  const [restoring, setRestoring] = useState(false);
+  const [restoreError, setRestoreError] = useState<string | null>(null);
 
   useEffect(() => {
     api.getNotificationStatus().then(setNotifStatus).catch(() => setNotifStatus(null));
@@ -110,6 +114,20 @@ export function Settings() {
       setUpdateMsg(e instanceof Error ? e.message : t("settings.updateFailed"));
     } finally {
       setUpdateBusy(false);
+    }
+  }
+
+  async function confirmRestore() {
+    if (!pendingRestore) return;
+    setRestoring(true);
+    setRestoreError(null);
+    try {
+      await api.restoreBackup(pendingRestore);
+      // Everything in memory (profile, plan, settings) is now stale.
+      window.location.reload();
+    } catch (e) {
+      setRestoreError(e instanceof Error ? e.message : String(e));
+      setRestoring(false);
     }
   }
 
@@ -311,6 +329,28 @@ export function Settings() {
       </Card>
 
       <Card className="stack">
+        <div className="field-label" style={{ margin: 0 }}>💾 {t("backup.title")}</div>
+        <a className="btn btn-soft btn-block" href="/api/backup" download>
+          {t("backup.download")}
+        </a>
+        <Button variant="ghost" onClick={() => restoreRef.current?.click()}>
+          {t("backup.restore")}
+        </Button>
+        <input
+          ref={restoreRef}
+          type="file"
+          accept=".db"
+          hidden
+          onChange={(e) => {
+            const f = e.target.files?.[0];
+            if (f) setPendingRestore(f);
+            e.target.value = "";
+          }}
+        />
+        <p className="muted setting-help">{t("backup.help")}</p>
+      </Card>
+
+      <Card className="stack">
         <div>
           <div className="field-label" style={{ margin: 0 }}>{t("settings.reset")}</div>
         </div>
@@ -320,6 +360,25 @@ export function Settings() {
       </Card>
 
       <p className="disclaimer" style={{ textAlign: "center" }}>🔒 {t("settings.about")}</p>
+
+      {pendingRestore && (
+        <div className="confirm-sheet">
+          <div className="confirm-card">
+            <h3 className="confirm-title">{t("backup.confirmTitle")}</h3>
+            <p className="muted confirm-body">{t("backup.confirmBody")}</p>
+            <p className="muted confirm-body num">{pendingRestore.name}</p>
+            {restoreError && <p className="notif-warn">{restoreError}</p>}
+            <div className="confirm-actions">
+              <Button variant="ghost" onClick={() => setPendingRestore(null)} disabled={restoring}>
+                {t("common.cancel")}
+              </Button>
+              <Button variant="violet" onClick={confirmRestore} disabled={restoring}>
+                {restoring ? t("common.loading") : t("backup.restore")}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {showResetConfirm && (
         <div className="confirm-sheet">

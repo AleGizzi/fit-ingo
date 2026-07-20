@@ -16,7 +16,9 @@ import os
 from datetime import date, datetime
 from pathlib import Path
 
-from flask import Flask, jsonify, request, send_from_directory
+from flask import (
+    Flask, after_this_request, jsonify, request, send_file, send_from_directory,
+)
 
 import db
 import diet as diet_engine
@@ -658,6 +660,60 @@ def health_summary():
     return jsonify(db.health_summary())
 
 
+@app.get("/api/backup")
+def download_backup():
+    """Download a consistent copy of the whole database."""
+    stamp = datetime.now().strftime("%Y%m%d-%H%M")
+    tmp = db.db_path().parent / f".backup-{stamp}.db"
+    db.snapshot_to(tmp)
+
+    @after_this_request
+    def _cleanup(response):
+        try:
+            tmp.unlink(missing_ok=True)
+        except OSError:
+            log.warning("could not remove temp backup %s", tmp)
+        return response
+
+    return send_file(tmp, as_attachment=True,
+                     download_name=f"fitingo-backup-{stamp}.db",
+                     mimetype="application/octet-stream")
+
+
+@app.post("/api/restore")
+def restore_backup():
+    """Replace the database with an uploaded backup.
+
+    Validated before anything is touched, and the current database is
+    snapshotted first — a rejected or failed restore always leaves the app
+    with a working database.
+    """
+    upload = request.files.get("file")
+    if not upload:
+        return jsonify({"error": "no file uploaded"}), 400
+
+    db_dir = db.db_path().parent
+    db_dir.mkdir(parents=True, exist_ok=True)
+    incoming = db_dir / "restore-incoming.db"
+    upload.save(str(incoming))
+
+    problem = db.validate_backup(incoming)
+    if problem:
+        incoming.unlink(missing_ok=True)
+        return jsonify({"error": problem}), 400
+
+    stamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+    safety = db_dir / f"pre-restore-{stamp}.db"
+    try:
+        db.snapshot_to(safety)
+        db.swap_database(incoming)
+    except Exception as exc:
+        incoming.unlink(missing_ok=True)
+        log.exception("restore failed")
+        return jsonify({"error": f"restore failed: {exc}"}), 500
+    return jsonify({"ok": True})
+
+
 @app.get("/api/settings")
 def get_settings():
     return jsonify(db.get_settings())
@@ -739,11 +795,20 @@ def _water_today() -> tuple[int, int]:
     return db.get_water(_today_iso()), db.get_settings()["water_goal_ml"]
 
 
+def _nightly_backup() -> None:
+    """Rolling week of local snapshots next to the database."""
+    backups = db.db_path().parent / "backups"
+    db.snapshot_to(backups / f"fitingo-{date.today():%Y%m%d}.db")
+    db.prune_backups(backups, keep=7)
+    log.info("nightly backup written to %s", backups)
+
+
 scheduler = ReminderScheduler(
     get_settings=db.get_settings,
     get_training_weekdays=training_weekdays,
     is_today_done=is_today_done,
     get_water_today=_water_today,
+    nightly_backup=_nightly_backup,
 )
 
 

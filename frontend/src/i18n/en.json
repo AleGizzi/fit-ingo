@@ -108,6 +108,14 @@
     "swapExclude": "Swap and don't suggest again",
     "swapNone": "No alternative available"
   },
+  "backup": {
+    "title": "Backup",
+    "download": "Download backup",
+    "restore": "Restore from backup",
+    "confirmTitle": "Restore this backup?",
+    "confirmBody": "This replaces everything currently in the app — profile, plan, logs and settings. Your current data is snapshotted first, but it won't be shown in the app anymore.",
+    "help": "Your data lives only on this device, so keep a copy somewhere safe. The app also writes an automatic snapshot every night and keeps the last 7 in data/backups/."
+  },
   "streak": {
     "freezes": "Streak freezes",
     "frozenBanner": "A freeze saved your streak on {{date}}",

@@ -131,12 +131,14 @@ class ReminderScheduler:
     """Owns the background thread. Callbacks decouple it from db/app modules."""
 
     def __init__(self, get_settings, get_training_weekdays, is_today_done,
-                 get_water_today=None):
+                 get_water_today=None, nightly_backup=None):
         self._get_settings = get_settings
         self._get_training_weekdays = get_training_weekdays
         self._is_today_done = is_today_done
         # () -> (ml_drunk, goal_ml); optional so old wiring keeps working.
         self._get_water_today = get_water_today
+        # () -> None, runs once a night; optional.
+        self._nightly_backup = nightly_backup
         self._thread: threading.Thread | None = None
         self._stop = threading.Event()
         # Remembers "YYYY-MM-DD HH:MM kind" strings already fired today.
@@ -174,6 +176,21 @@ class ReminderScheduler:
 
         self._tick_workout(settings, today, hhmm, msg)
         self._tick_water(settings, today, hhmm, msg)
+        self._tick_backup(today, hhmm)
+
+    def _tick_backup(self, today: date, hhmm: str) -> None:
+        """Nightly local snapshot at 03:00. A failing backup must never take
+        the reminder thread down with it."""
+        if not self._nightly_backup or not hhmm.startswith("03:0"):
+            return
+        key = f"{today.isoformat()} backup"
+        if key in self._fired:
+            return
+        self._fired.add(key)
+        try:
+            self._nightly_backup()
+        except Exception:
+            log.exception("nightly backup failed")
 
     def _tick_workout(self, settings: dict, today: date, hhmm: str, msg: dict) -> None:
         if not settings.get("reminder_enabled"):
